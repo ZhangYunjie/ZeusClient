@@ -2,8 +2,8 @@
 using System.Collections;
 
 public class PlayerController : MonoBehaviour {
-	public float speed;
-	public float jumpPower = 1000;
+	public float speed = 200;
+	public float jumpPower = 300;
 	private float distToGround;
 	
 	public Vector3 strech_power {
