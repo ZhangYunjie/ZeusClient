@@ -5,7 +5,7 @@ public class TouchController : MonoBehaviour {
 	private bool is_strech = false;
 	private Vector3 origin_position;
 	private Vector3 delta;
-	public GameObject player;
+	public PlayerController player;
 	public Plane groundPlane;
 
 	// Use this for initialization
@@ -51,15 +51,14 @@ public class TouchController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		// not react when player is running
-//		if(player.rigidbody.velocity != new Vector3() ){
-//			is_strech = false;
-//			//#TODO Jump logic
-//			// touch begin add force up
-//			// touch move continuous force and stop force
-//			// touch end will stop force
-//			// will not react other touch before Jump end
-//		  	return;
-//		}
+		if(player.is_running ){
+			is_strech = false;
+			if(Input.touches.Length > 0 || Input.GetMouseButtonDown(0)){
+				Debug.Log("tap jump");
+				player.tap_jump = true;
+			}
+		  	return;
+		}
 
 		mouseStrech ();
 
@@ -107,8 +106,13 @@ public class TouchController : MonoBehaviour {
 			{
 				Debug.Log("player run");
 				//#FIXME limit maximum delta
-				player.GetComponent<PlayerController>().run(delta);
+				player.strech_power = delta;
+				player.streched = true;
 			}
 		}
+	}
+
+	void FixedUpdate(){
+
 	}
 }
