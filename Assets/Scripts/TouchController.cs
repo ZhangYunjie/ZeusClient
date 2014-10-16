@@ -51,15 +51,15 @@ public class TouchController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		// not react when player is running
-		if(player.rigidbody.velocity != new Vector3() ){
-			is_strech = false;
-			//#TODO Jump logic
-			// touch begin add force up
-			// touch move continuous force and stop force
-			// touch end will stop force
-			// will not react other touch before Jump end
-		  	return;
-		}
+//		if(player.rigidbody.velocity != new Vector3() ){
+//			is_strech = false;
+//			//#TODO Jump logic
+//			// touch begin add force up
+//			// touch move continuous force and stop force
+//			// touch end will stop force
+//			// will not react other touch before Jump end
+//		  	return;
+//		}
 
 		mouseStrech ();
 
