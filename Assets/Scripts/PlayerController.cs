@@ -61,8 +61,7 @@ public class PlayerController : MonoBehaviour {
 		if (rigidbody.velocity.sqrMagnitude > 0.1) {
 			is_running = true;
 		} else {
-			Vector3 current_velocity = rigidbody.velocity;
-			rigidbody.velocity = new Vector3(0, current_velocity.y, 0);
+			//FIXME reduce tiny movement before stop
 			is_running = false;
 		}
 	}
