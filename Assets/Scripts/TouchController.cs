@@ -44,6 +44,16 @@ public class TouchController : MonoBehaviour {
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			if(groundPlane.Raycast(ray, out rayDistance)){
 				delta = origin_position - ray.GetPoint(rayDistance);
+				Debug.Log("delta: " + delta);
+
+				// get the angle of the arrow
+				foreach (Transform t in player.GetComponentsInChildren<Transform>() ) {
+					Debug.Log ( t.name );
+					if ( t.name == "TrailNode" ) {
+						Debug.Log ( "Y4es" );
+						t.Rotate( delta );
+					}
+				}
 			}
 		}
 	}
