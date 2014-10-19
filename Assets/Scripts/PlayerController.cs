@@ -2,6 +2,28 @@
 using System.Collections;
 
 public class PlayerController : MonoBehaviour {
+
+	public enum PlayerMode
+	{
+		kModeInit,
+		kModeAim,
+		kModeStrech,
+		kModeAction,
+		kModeJump,
+		kModeFall,
+		kModeWin,
+		kModeBirdsEye,
+		NULL,
+	};
+
+	public PlayerMode mPlayerMode;						// current mode
+
+	public float fallTime;
+	private float mCurrentFallTime;
+
+	public float minVelocity = 1.5f;		//the velocity we use to determine its stopped
+	public float minAngularVelocity = 1.0f;	//the angular velocity we use to help determine if the ball is stopped.
+
 	public float speed = 200;
 	public float jumpPower = 300;
 	private float distToGround;
@@ -37,18 +59,44 @@ public class PlayerController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-//		RaycastHit hit; 
-//		Vector3 p1 = transform.position; 
-//		Vector3 p2 = p1 + Vector3.forward * 0.5f; 
-//		if(Physics.CapsuleCast(p1, p2, 0.0f, transform.forward, out hit, 0.1f)) {
-//			//停止该角色 
-//			rigidbody.velocity = new Vector3();
-//		}
+		updatePlayer();
+	}
+
+	void updatePlayer() {
+		switch ( mPlayerMode ) {
+			case kModeInit:
+				break;
+			case kModeAim:
+				showArrow();
+				break
+			case kModeStrech:
+				run();
+				hideArrow();
+				break;
+			case kModeAction:
+				break;
+			case kModeJump:
+				jump();
+				break;
+			case kModeFall:
+				break;
+			case kModeWin:
+				break;
+			case kModeBirdsEye:
+				break;
+			default:
+				break;
+		}
+	}
+
+	public void setMode(PlayerMode _mode) {
+		mPlayerMode = _mode;
 	}
 
 	void FixedUpdate() {
 		if (streched && !is_running) {
 			run ();
+			hideArrow();
 			streched = false;
 		}
 
@@ -58,11 +106,14 @@ public class PlayerController : MonoBehaviour {
 			tap_jump = false;
 		}
 
-		if (rigidbody.velocity.sqrMagnitude > 0.1) {
+		if (rigidbody.velocity.sqrMagnitude > 0.2) {
 			is_running = true;
-		} else {
-			//FIXME reduce tiny movement before stop
+		}
+		else if (is_running) {
+				//FIXME reduce tiny movement before stop
+			rigidbody.Sleep();
 			is_running = false;
+			showArrow ();
 		}
 	}
 
@@ -82,5 +133,23 @@ public class PlayerController : MonoBehaviour {
 
 	private void jump(){
 		rigidbody.AddForce( Vector3.up * jumpPower );
+	}
+
+	private void hideArrow(){
+		foreach (Transform t in transform ) {
+			Debug.Log ( t.name );
+			if ( t.name == "TrailNode" ) {
+				t.gameObject.SetActive(false);
+			}
+		}
+	}
+
+	private void showArrow(){
+		foreach (Transform t in transform ) {
+			Debug.Log ( t.name );
+			if ( t.name == "TrailNode" ) {
+				t.gameObject.SetActive(true);
+			}
+		}
 	}
 }

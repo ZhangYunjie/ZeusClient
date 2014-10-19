@@ -13,50 +13,6 @@ public class TouchController : MonoBehaviour {
 		groundPlane = new Plane(Vector3.up, new Vector3(0, 0, 0));
 		delta = new Vector3 ();
 	}
-
-	void mouseStrech(){
-		if(Input.GetMouseButtonDown(0))
-		{
-			//save began touch point
-			origin_position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-			RaycastHit hit;
-			if (Physics.Raycast(ray, out hit))
-			{
-				if(hit.collider.tag == "Player"){
-					float rayDistance;
-					if (groundPlane.Raycast(ray, out rayDistance)){
-						origin_position = ray.GetPoint(rayDistance);
-						is_strech = true;
-						Debug.Log("strech: " + origin_position);
-					}
-				}
-			}
-		}
-		else if(Input.GetMouseButtonUp(0))
-		{
-			//save ended touch point
-			Debug.Log(delta.sqrMagnitude);
-			touchEndAction();
-		}
-		else if (is_strech) {
-			float rayDistance;
-			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-			if(groundPlane.Raycast(ray, out rayDistance)){
-				delta = origin_position - ray.GetPoint(rayDistance);
-				Debug.Log("delta: " + delta);
-
-				// get the angle of the arrow
-				foreach (Transform t in player.GetComponentsInChildren<Transform>() ) {
-					Debug.Log ( t.name );
-					if ( t.name == "TrailNode" ) {
-						Debug.Log ( "Y4es" );
-						t.Rotate( delta );
-					}
-				}
-			}
-		}
-	}
 	
 	// Update is called once per frame
 	void Update () {
@@ -108,6 +64,51 @@ public class TouchController : MonoBehaviour {
 		}
 	}
 
+	void FixedUpdate(){
+		
+	}
+	
+	void mouseStrech(){
+		if(Input.GetMouseButtonDown(0))
+		{
+			//save began touch point
+			origin_position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+			RaycastHit hit;
+			if (Physics.Raycast(ray, out hit))
+			{
+				if(hit.collider.tag == "Player"){
+					float rayDistance;
+					if (groundPlane.Raycast(ray, out rayDistance)){
+						origin_position = ray.GetPoint(rayDistance);
+						is_strech = true;
+						Debug.Log("strech: " + origin_position);
+					}
+				}
+			}
+		}
+		else if(Input.GetMouseButtonUp(0))
+		{
+			//save ended touch point
+			Debug.Log(delta.sqrMagnitude);
+			touchEndAction();
+		}
+		else if (is_strech) {
+			float rayDistance;
+			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+			if(groundPlane.Raycast(ray, out rayDistance)){
+				delta = origin_position - ray.GetPoint(rayDistance);
+				Debug.Log("delta: " + delta);
+
+				foreach (Transform t in player.GetComponentsInChildren<Transform>() ) {
+					Debug.Log ( t.name );
+					if ( t.name == "TrailNode" ) {
+						t.rotation = Quaternion.LookRotation( delta );
+					}
+				}
+			}
+		}
+	}
 	void touchEndAction(){
 		if (is_strech) {
 			is_strech = false;
@@ -120,9 +121,5 @@ public class TouchController : MonoBehaviour {
 				player.streched = true;
 			}
 		}
-	}
-
-	void FixedUpdate(){
-
 	}
 }
