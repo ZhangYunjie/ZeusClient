@@ -1,86 +1,168 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlayerController : MonoBehaviour {
-	public float speed = 200;
-	public float jumpPower = 300;
-	private float distToGround;
-	
-	public Vector3 strech_power {
-		get;
-		set;
-	}
+public class PlayerController : MonoBehaviour
+{
 
-	public bool is_running {
-		get;
-		set;
-	}
+    public enum PlayerMode
+    {
+        kModeAim = 0,
+        kModeStrech,
+        kModeEmit,
+        kModeAction,
+        kModeJump,
+        kModeFall,
+        kModeWin,
+        NULL,
+    };
 
-	public bool streched {
-		get;
-		set;
-	}
+    public PlayerMode mPlayerMode = PlayerMode.kModeAim;    // current mode
 
-	public bool tap_jump {
-		get;
-		set;
-	}
+    public float fallTime;
+    private float mCurrentFallTime;
+    public float minVelocity = 1.5f;        //the velocity we use to determine its stopped
+    public float minAngularVelocity = 1.0f; //the angular velocity we use to help determine if the ball is stopped.
 
-	// Use this for initialization
-	void Start () {
-		strech_power = new Vector3 ();
-		streched = false;
-		is_running = false;
-		tap_jump = false;
-		distToGround = collider.bounds.extents.y;
-	}
-	
-	// Update is called once per frame
-	void Update () {
-//		RaycastHit hit; 
-//		Vector3 p1 = transform.position; 
-//		Vector3 p2 = p1 + Vector3.forward * 0.5f; 
-//		if(Physics.CapsuleCast(p1, p2, 0.0f, transform.forward, out hit, 0.1f)) {
-//			//停止该角色 
-//			rigidbody.velocity = new Vector3();
-//		}
-	}
+    public float speed = 200;
+    public float jumpPower = 300;
+    private float distToGround;
+    
+    public Vector3 strech_power
+    {
+        get;
+        set;
+    }
 
-	void FixedUpdate() {
-		if (streched && !is_running) {
-			run ();
-			streched = false;
-		}
+    public bool is_running
+    {
+        get;
+        set;
+    }
 
-		if (tap_jump && IsGrounded() && is_running) {
-			Debug.Log("jump");
-			jump();
-			tap_jump = false;
-		}
+    public bool streched
+    {
+        get;
+        set;
+    }
 
-		if (rigidbody.velocity.sqrMagnitude > 0.1) {
-			is_running = true;
-		} else {
-			//FIXME reduce tiny movement before stop
-			is_running = false;
-		}
-	}
+    public bool tap_jump
+    {
+        get;
+        set;
+    }
 
-	void OnTriggerEnter(Collider other) {
-		Debug.Log (other.gameObject.tag);
-	}
+    // Use this for initialization
+    void Start()
+    {
+        strech_power = new Vector3();
+        streched = false;
+        is_running = false;
+        tap_jump = false;
+        distToGround = collider.bounds.extents.y;
+    }
+    
+    // Update is called once per frame
+    void Update()
+    {
+        updatePlayer();
+    }
 
-	
-	public bool IsGrounded(){
-		return Physics.Raycast(transform.position, -Vector3.up, distToGround + 0.1f);
-	}
+    void updatePlayer()
+    {
+        switch (mPlayerMode)
+        {
+            case PlayerMode.kModeAim:
+                showArrow();
+                break;
+            case PlayerMode.kModeEmit:
+                run();
+                hideArrow();
+                break;
+            case PlayerMode.kModeAction:
+                break;
+            case PlayerMode.kModeJump:
+                jump();
+                break;
+            case PlayerMode.kModeFall:
+                break;
+            case PlayerMode.kModeWin:
+                break;
+            default:
+                break;
+        }
+    }
 
-	private void run(){
-		//#FIXME set y = 0;
-		rigidbody.AddForce(strech_power * speed);
-	}
+    public void setMode(PlayerMode _mode)
+    {
+        mPlayerMode = _mode;
+    }
 
-	private void jump(){
-		rigidbody.AddForce( Vector3.up * jumpPower );
-	}
+    public PlayerMode getMode()
+    {
+        return mPlayerMode;
+    }
+
+    void FixedUpdate()
+    {
+        if (rigidbody.velocity.sqrMagnitude > 0.2)
+        {
+            is_running = true;
+        } else if (is_running)
+        {
+            //FIXME reduce tiny movement before stop
+            is_running = false;
+            showArrow();
+        }
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        Debug.Log(other.gameObject.tag);
+    }
+    
+    public bool IsGrounded()
+    {
+        return Physics.Raycast(transform.position, -Vector3.up, distToGround + 0.1f);
+    }
+
+    private void run()
+    {
+        //#FIXME set y = 0;
+        setMode(PlayerMode.kModeAction);
+        rigidbody.AddForce(strech_power * speed);
+    }
+
+    private void jump()
+    {
+        setMode(PlayerMode.kModeAction);
+
+        if (IsGrounded())
+        {
+            rigidbody.AddForce(Vector3.up * jumpPower);
+        }
+    }
+
+    private void hideArrow()
+    {
+        foreach (Transform t in transform)
+        {
+            Debug.Log(t.name);
+            if (t.name == "TrailNode")
+            {
+                t.gameObject.SetActive(false);
+            }
+        }
+    }
+
+    private void showArrow()
+    {
+        foreach (Transform t in transform)
+        {
+            Debug.Log(t.name);
+            if (t.name == "TrailNode")
+            {
+                t.gameObject.SetActive(true);
+            }
+        }
+    }
 }

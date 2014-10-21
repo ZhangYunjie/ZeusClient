@@ -2,9 +2,10 @@
 using System.Collections;
 
 public class TouchController : MonoBehaviour {
-	private bool is_strech = false;
+
 	private Vector3 origin_position;
 	private Vector3 delta;
+
 	public PlayerController player;
 	public Plane groundPlane;
 
@@ -13,116 +14,145 @@ public class TouchController : MonoBehaviour {
 		groundPlane = new Plane(Vector3.up, new Vector3(0, 0, 0));
 		delta = new Vector3 ();
 	}
-
-	void mouseStrech(){
-		if(Input.GetMouseButtonDown(0))
-		{
-			//save began touch point
-			origin_position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-			RaycastHit hit;
-			if (Physics.Raycast(ray, out hit))
-			{
-				if(hit.collider.tag == "Player"){
-					float rayDistance;
-					if (groundPlane.Raycast(ray, out rayDistance)){
-						origin_position = ray.GetPoint(rayDistance);
-						is_strech = true;
-						Debug.Log("strech: " + origin_position);
-					}
-				}
-			}
-		}
-		else if(Input.GetMouseButtonUp(0))
-		{
-			//save ended touch point
-			Debug.Log(delta.sqrMagnitude);
-			touchEndAction();
-		}
-		else if (is_strech) {
-			float rayDistance;
-			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-			if(groundPlane.Raycast(ray, out rayDistance)){
-				delta = origin_position - ray.GetPoint(rayDistance);
-				Debug.Log("delta: " + delta);
-
-				// get the angle of the arrow
-				foreach (Transform t in player.GetComponentsInChildren<Transform>() ) {
-					Debug.Log ( t.name );
-					if ( t.name == "TrailNode" ) {
-						Debug.Log ( "Y4es" );
-						t.Rotate( delta );
-					}
-				}
-			}
-		}
-	}
 	
 	// Update is called once per frame
 	void Update () {
 		// not react when player is running
-		if(player.is_running ){
-			is_strech = false;
+		if(player.getMode() == PlayerController.PlayerMode.kModeAction ){
 			if(Input.touches.Length > 0 || Input.GetMouseButtonDown(0)){
 				Debug.Log("tap jump");
-				player.tap_jump = true;
+				player.setMode( PlayerController.PlayerMode.kModeJump );
 			}
 		  	return;
 		}
 
 		mouseStrech ();
 
-		if (Input.touches.Length == 0 && !is_strech) {
+		if ( Input.touches.Length <= 0 ) {
 			return;
 		}
 
-
-		foreach( Touch touch in Input.touches ){
-			if( touch.phase == TouchPhase.Began && !is_strech )
+		foreach( Touch touch in Input.touches )
+        {
+			if( touch.phase == TouchPhase.Began && player.getMode() == PlayerController.PlayerMode.kModeAim )
 			{
 				Ray ray = Camera.main.ScreenPointToRay(touch.position);
 				RaycastHit hit;
 				if (Physics.Raycast(ray, out hit))
 				{
-					if(hit.collider.tag == "Player"){
+					if(hit.collider.tag == "Player")
+                    {
 						float rayDistance;
-						if (groundPlane.Raycast(ray, out rayDistance)){
+						if (groundPlane.Raycast(ray, out rayDistance))
+                        {
 							origin_position = ray.GetPoint(rayDistance);
-							is_strech = true;
+							player.setMode(PlayerController.PlayerMode.kModeStrech);
 							Debug.Log("strech: " + origin_position);
 						}
 					}
 				}
 			}
-			else if (touch.phase == TouchPhase.Moved) {
+			else if ( touch.phase == TouchPhase.Moved && player.getMode() == PlayerController.PlayerMode.kModeStrech ) 
+            {
 				float rayDistance;
 				Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-				if(groundPlane.Raycast(ray, out rayDistance)){
+				if(groundPlane.Raycast(ray, out rayDistance))
+                {
 					delta = origin_position - ray.GetPoint(rayDistance);
+                    foreach (Transform t in player.GetComponentsInChildren<Transform>() ) 
+                    {
+                        if ( t.name == "TrailNode" ) 
+                        {
+                            t.rotation = Quaternion.LookRotation( delta );
+                        }
+                    }
 				}
 			}
-			else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled) {
+			else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled) 
+            {
 				Debug.Log(delta.sqrMagnitude);
-				touchEndAction();
-			}
-		}
-	}
-
-	void touchEndAction(){
-		if (is_strech) {
-			is_strech = false;
-			
-			if(delta.sqrMagnitude >= 0.2)
-			{
-				Debug.Log("player run");
-				//#FIXME limit maximum delta
-				player.strech_power = delta;
-				player.streched = true;
+				mouseReleased();
 			}
 		}
 	}
 
 	void FixedUpdate(){
+		
+	}
+
+	void mousePushed(){
+		//save began touch point
+		origin_position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+		RaycastHit hit;
+		if (Physics.Raycast(ray, out hit))
+		{
+			if(hit.collider.tag == "Player" && player.getMode() == PlayerController.PlayerMode.kModeAim ){
+				float rayDistance;
+				if (groundPlane.Raycast(ray, out rayDistance)){
+					origin_position = ray.GetPoint(rayDistance);
+					player.setMode( PlayerController.PlayerMode.kModeStrech );
+					Debug.Log("strech: " + origin_position);
+				}
+			}
+		}
+	}
+
+	void mouseMoved(){
+		if (player.getMode () != PlayerController.PlayerMode.kModeStrech)
+		{
+			return;
+		}
+
+		float rayDistance;
+		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+		if(groundPlane.Raycast(ray, out rayDistance))
+        {
+			delta = origin_position - ray.GetPoint(rayDistance);
+			Debug.Log("delta: " + delta);
+			
+			foreach (Transform t in player.GetComponentsInChildren<Transform>() ) 
+            {
+				if ( t.name == "TrailNode" ) 
+                {
+					t.rotation = Quaternion.LookRotation( delta );
+				}
+			}
+		}
+	}
+
+	void mouseReleased(){
+		//save ended touch point
+		if ( player.getMode() == PlayerController.PlayerMode.kModeStrech) 
+		{
+			if(delta.sqrMagnitude >= 0.2)
+			{
+				//#FIXME limit maximum delta
+				player.strech_power = delta;
+				player.setMode( PlayerController.PlayerMode.kModeEmit );
+			}
+			else
+			{
+				player.setMode( PlayerController.PlayerMode.kModeAim );
+			}
+		}
+	}
+	
+	void mouseStrech(){
+		if(Input.GetMouseButtonDown(0))
+		{
+			mousePushed();
+		}
+		else if(Input.GetMouseButtonUp(0))
+		{
+			mouseReleased();
+		}
+		else if ( player.getMode() == PlayerController.PlayerMode.kModeStrech ) 
+		{
+			mouseMoved();
+		}
+	}
+	void touchEndAction(){
 
 	}
 }
