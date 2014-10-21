@@ -20,13 +20,19 @@ public class PlayerController : MonoBehaviour
 
     public float fallTime;
     private float mCurrentFallTime;
-    public float minVelocity = 1.5f;        //the velocity we use to determine its stopped
+ 
+    //the time the ball has to be "stopped before it registers"
+    public  float requiredStoppedTime   = 1.0f;
+    private float mStoppedTime         = 0f;
+
+    public float minVelocity = 0.2f;        //the velocity we use to determine its stopped
     public float minAngularVelocity = 1.0f; //the angular velocity we use to help determine if the ball is stopped.
 
     public float speed = 200;
     public float jumpPower = 300;
     private float distToGround;
-    
+    private Transform m_trailNode;
+   
     public Vector3 strech_power
     {
         get;
@@ -43,8 +49,10 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         strech_power = new Vector3();
-        is_running = false;
         distToGround = collider.bounds.extents.y;
+
+        m_trailNode = transform.Find ("TrailNode");     
+
     }
     
     // Update is called once per frame
@@ -65,6 +73,7 @@ public class PlayerController : MonoBehaviour
                 enableArrow(false);
                 break;
             case PlayerMode.kModeAction:
+                handleAction();
                 break;
             case PlayerMode.kModeJump:
                 jump();
@@ -90,14 +99,6 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (rigidbody.velocity.sqrMagnitude > 0.2)
-        {
-            is_running = true;
-        } else if ( getMode() == PlayerMode.kModeAction )
-        {
-            //FIXME reduce tiny movement before stop
-            setMode( PlayerMode.kModeAim );
-        }
     }
 
     void OnTriggerEnter(Collider other)
@@ -112,6 +113,8 @@ public class PlayerController : MonoBehaviour
 
     private void run()
     {
+        initParam();
+       
         //#FIXME set y = 0;
         setMode(PlayerMode.kModeAction);
         rigidbody.AddForce(strech_power * speed);
@@ -127,14 +130,48 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void enableArrow(bool _active)
+    private void handleAction()
     {
-        foreach (Transform t in transform)
+        float speed = Mathf.Abs(rigidbody.velocity.sqrMagnitude);
+
+        if(speed < minVelocity)
         {
-            if (t.name == "TrailNode")
-            {
-                t.gameObject.SetActive(_active);
-            }
+            mStoppedTime += Time.deltaTime;
+        }
+   
+        if(mStoppedTime > requiredStoppedTime)
+        {
+            Debug.Log("mStoppedTime: " + mStoppedTime);
+            Debug.Log("speed: " + speed);
+            stopPlayer();
+        }
+    }
+
+    private void initParam()
+    {
+        //reset the stopped time
+        mStoppedTime = 0f;
+    }
+
+    private void enableArrow(bool _enabled)
+    {
+        if(m_trailNode)
+        {
+            m_trailNode.gameObject.SetActive(_enabled);
+        }
+    }
+
+    private void stopPlayer()
+    {
+        if (!rigidbody.isKinematic)
+        {
+            rigidbody.velocity = Vector3.zero;
+            rigidbody.angularVelocity = Vector3.zero;
+        }
+
+        if (getMode() != PlayerMode.kModeWin)
+        {
+            setMode(PlayerMode.kModeAim);
         }
     }
 }
