@@ -80,7 +80,8 @@ public class TouchController : MonoBehaviour {
 		
 	}
 
-	void mousePushed(){
+	void mousePushed()
+    {
 		//save began touch point
 		origin_position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -98,7 +99,8 @@ public class TouchController : MonoBehaviour {
 		}
 	}
 
-	void mouseMoved(){
+	void mouseMoved()
+    {
 		if (player.getMode () != PlayerController.PlayerMode.kModeStrech)
 		{
 			return;
@@ -121,7 +123,8 @@ public class TouchController : MonoBehaviour {
 		}
 	}
 
-	void mouseReleased(){
+	void mouseReleased()
+    {
 		//save ended touch point
 		if ( player.getMode() == PlayerController.PlayerMode.kModeStrech) 
 		{
@@ -138,7 +141,8 @@ public class TouchController : MonoBehaviour {
 		}
 	}
 	
-	void mouseStrech(){
+	void mouseStrech()
+    {
 		if(Input.GetMouseButtonDown(0))
 		{
 			mousePushed();
@@ -151,8 +155,5 @@ public class TouchController : MonoBehaviour {
 		{
 			mouseMoved();
 		}
-	}
-	void touchEndAction(){
-
 	}
 }

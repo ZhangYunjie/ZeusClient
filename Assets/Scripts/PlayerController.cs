@@ -39,25 +39,11 @@ public class PlayerController : MonoBehaviour
         set;
     }
 
-    public bool streched
-    {
-        get;
-        set;
-    }
-
-    public bool tap_jump
-    {
-        get;
-        set;
-    }
-
     // Use this for initialization
     void Start()
     {
         strech_power = new Vector3();
-        streched = false;
         is_running = false;
-        tap_jump = false;
         distToGround = collider.bounds.extents.y;
     }
     
@@ -72,11 +58,11 @@ public class PlayerController : MonoBehaviour
         switch (mPlayerMode)
         {
             case PlayerMode.kModeAim:
-                showArrow();
+                enableArrow(true);
                 break;
             case PlayerMode.kModeEmit:
                 run();
-                hideArrow();
+                enableArrow(false);
                 break;
             case PlayerMode.kModeAction:
                 break;
@@ -107,11 +93,10 @@ public class PlayerController : MonoBehaviour
         if (rigidbody.velocity.sqrMagnitude > 0.2)
         {
             is_running = true;
-        } else if (is_running)
+        } else if ( getMode() == PlayerMode.kModeAction )
         {
             //FIXME reduce tiny movement before stop
-            is_running = false;
-            showArrow();
+            setMode( PlayerMode.kModeAim );
         }
     }
 
@@ -142,26 +127,13 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void hideArrow()
+    private void enableArrow(bool _active)
     {
         foreach (Transform t in transform)
         {
-            Debug.Log(t.name);
             if (t.name == "TrailNode")
             {
-                t.gameObject.SetActive(false);
-            }
-        }
-    }
-
-    private void showArrow()
-    {
-        foreach (Transform t in transform)
-        {
-            Debug.Log(t.name);
-            if (t.name == "TrailNode")
-            {
-                t.gameObject.SetActive(true);
+                t.gameObject.SetActive(_active);
             }
         }
     }
