@@ -30,6 +30,8 @@ public class PlayerController : MonoBehaviour
 
     public float speed = 200;
     public float jumpPower = 300;
+    public float rotatePower = 100;
+    private int rotateDirection = 0;
     private float distToGround;
     private Transform m_trailNode;
    
@@ -53,6 +55,8 @@ public class PlayerController : MonoBehaviour
 
         m_trailNode = transform.Find ("TrailNode");     
 
+        rotateDirection = 1;
+        rigidbody.maxAngularVelocity = 50;
     }
     
     // Update is called once per frame
@@ -118,6 +122,12 @@ public class PlayerController : MonoBehaviour
         //#FIXME set y = 0;
         setMode(PlayerMode.kModeAction);
         rigidbody.AddForce(strech_power * speed);
+        rotate();
+    }
+
+    private void rotate()
+    {
+        rigidbody.AddTorque(Vector3.up * rotatePower * rotateDirection);
     }
 
     private void jump()
