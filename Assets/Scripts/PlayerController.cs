@@ -53,7 +53,8 @@ public class PlayerController : MonoBehaviour
         strech_power = new Vector3();
         distToGround = collider.bounds.extents.y;
 
-        m_trailNode = transform.Find ("TrailNode");     
+        m_trailNode = transform.Find ("TrailNode");
+        enableArrow( false );
 
         rotateDirection = 1;
         rigidbody.maxAngularVelocity = 50;
@@ -70,6 +71,9 @@ public class PlayerController : MonoBehaviour
         switch (mPlayerMode)
         {
             case PlayerMode.kModeAim:
+                enableArrow(false);
+                break;
+            case PlayerMode.kModeStrech:
                 enableArrow(true);
                 break;
             case PlayerMode.kModeEmit:
@@ -113,6 +117,19 @@ public class PlayerController : MonoBehaviour
     public bool IsGrounded()
     {
         return Physics.Raycast(transform.position, -Vector3.up, distToGround + 0.1f);
+    }
+
+    public void victory()
+    {
+        Debug.Log("victory!");
+
+        rigidbody.isKinematic = true;
+        if (rigidbody.isKinematic == false)
+        {
+            rigidbody.velocity = Vector3.zero;
+            rigidbody.angularVelocity = Vector3.zero;
+        }
+        setMode(PlayerMode.kModeWin);
     }
 
     private void run()

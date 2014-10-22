@@ -3,16 +3,25 @@ using System.Collections;
 
 public class CameraController : MonoBehaviour {
 	public GameObject player;
+    public float thresHolder_Y;
 	private Vector3 offset;
 
 	// Use this for initialization
-	void Start () {
+	void Start () 
+    {
+        thresHolder_Y = 3f;
 		offset = transform.position - player.transform.position;
 	}
 	
 	// Update is called once per frame
-	void Update () {
-		transform.position = player.transform.position + offset;
+	void Update () 
+    {
+		Vector3 newPos = player.transform.position + offset;
+        if (newPos.y < thresHolder_Y)
+        {
+            newPos.y = thresHolder_Y;
+        }
+        transform.position = newPos;
 	}
 
 	void FixedUpdate(){
