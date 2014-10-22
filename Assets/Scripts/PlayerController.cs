@@ -169,7 +169,7 @@ public class PlayerController : MonoBehaviour
     private void rotate()
     {
         Debug.Log("rotate:" + slider.getRotateDirection());
-        rigidbody.AddTorque(Vector3.up * rotatePower * slider.getRotateDirection());
+        rigidbody.AddTorque(Vector3.back * rotatePower * slider.getRotateDirection());
     }
 
     private void jump()
