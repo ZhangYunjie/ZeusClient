@@ -4,15 +4,21 @@ using System.Collections;
 public class VictoryTrigger : MonoBehaviour 
 {
     private GameObject mPlayerObj;
+    private GameObject mWinDialog;
     private PlayerController mPlayerController;
  
 	// Use this for initialization
 	void Start () {
         mPlayerObj = GameObject.FindWithTag("Player");
+        mWinDialog = GameObject.FindWithTag("WinDialog");
 
         if (mPlayerObj)
         {
             mPlayerController = mPlayerObj.GetComponent<PlayerController>();
+        }
+        if (mWinDialog)
+        {
+            mWinDialog.SetActive(false);
         }
 	}
 	
@@ -29,6 +35,7 @@ public class VictoryTrigger : MonoBehaviour
             if (mPlayerController)
             {
                 mPlayerController.victory();
+                mWinDialog.SetActive(true);
             }
         }
     }

@@ -93,6 +93,7 @@ public class PlayerController : MonoBehaviour
                 break;
             case PlayerMode.kModeWin:
                 hideSlider();
+                showWinDialog();
                 break;
             default:
                 break;
@@ -126,6 +127,10 @@ public class PlayerController : MonoBehaviour
     void stopSlider()
     {
         slider.mode = RotateSliderController.RotateSliderMode.kModeStop;
+    }
+
+    void showWinDialog()
+    {
     }
 
     void OnTriggerEnter(Collider other)
