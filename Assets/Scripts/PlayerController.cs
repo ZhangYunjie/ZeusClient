@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour
     };
 
     public PlayerMode mPlayerMode = PlayerMode.kModeAim;    // current mode
+    public RotateSliderController slider;
 
     public float fallTime;
     private float mCurrentFallTime;
@@ -31,7 +32,6 @@ public class PlayerController : MonoBehaviour
     public float speed = 200;
     public float jumpPower = 300;
     public float rotatePower = 100;
-    private int rotateDirection = 0;
     private float distToGround;
     private Transform m_trailNode;
    
@@ -56,7 +56,6 @@ public class PlayerController : MonoBehaviour
         m_trailNode = transform.Find ("TrailNode");
         enableArrow( false );
 
-        rotateDirection = 1;
         rigidbody.maxAngularVelocity = 50;
     }
     
@@ -71,12 +70,15 @@ public class PlayerController : MonoBehaviour
         switch (mPlayerMode)
         {
             case PlayerMode.kModeAim:
+                hideSlider();
                 enableArrow(false);
                 break;
             case PlayerMode.kModeStrech:
                 enableArrow(true);
+                scanSlider();
                 break;
             case PlayerMode.kModeEmit:
+                stopSlider();
                 run();
                 enableArrow(false);
                 break;
@@ -87,8 +89,10 @@ public class PlayerController : MonoBehaviour
                 jump();
                 break;
             case PlayerMode.kModeFall:
+                hideSlider();
                 break;
             case PlayerMode.kModeWin:
+                hideSlider();
                 break;
             default:
                 break;
@@ -107,6 +111,21 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+    }
+
+    void hideSlider()
+    {      
+        slider.mode = RotateSliderController.RotateSliderMode.kModeHide;
+    }
+
+    void scanSlider()
+    {
+        slider.mode = RotateSliderController.RotateSliderMode.kModeScan;
+    }
+
+    void stopSlider()
+    {
+        slider.mode = RotateSliderController.RotateSliderMode.kModeStop;
     }
 
     void OnTriggerEnter(Collider other)
@@ -144,7 +163,8 @@ public class PlayerController : MonoBehaviour
 
     private void rotate()
     {
-        rigidbody.AddTorque(Vector3.up * rotatePower * rotateDirection);
+        Debug.Log("rotate:" + slider.getRotateDirection());
+        rigidbody.AddTorque(Vector3.up * rotatePower * slider.getRotateDirection());
     }
 
     private void jump()
