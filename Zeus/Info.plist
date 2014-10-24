@@ -35,10 +35,10 @@
 	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationPortrait</string>
 	</array>
 	<key>UIInterfaceOrientation</key>
-	<string>UIInterfaceOrientationLandscapeLeft</string>
+	<string>UIInterfaceOrientationPortrait</string>
 	<key>UIPrerenderedIcon</key>
 	<false/>
 	<key>UIRequiresPersistentWiFi</key>
