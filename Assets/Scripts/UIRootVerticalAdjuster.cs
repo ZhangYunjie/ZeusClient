@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[ExecuteInEditMode]
 public class UIRootVerticalAdjuster : MonoBehaviour {
 
     public int manualWidth = 640;
