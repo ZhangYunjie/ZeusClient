@@ -49,7 +49,7 @@ public class TouchController : MonoBehaviour {
                         {
 							origin_position = ray.GetPoint(rayDistance);
 							player.setMode(PlayerController.PlayerMode.kModeStrech);
-							Debug.Log("strech: " + origin_position);
+							// Debug.Log("strech: " + origin_position);
 						}
 					}
 				}
@@ -65,14 +65,14 @@ public class TouchController : MonoBehaviour {
                     {
                         if ( t.name == "TrailNode" ) 
                         {
-                            t.rotation = Quaternion.LookRotation( delta );
-                        }
+                            player.updateArrow(delta);
+                        }                        
                     }
 				}
 			}
 			else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled) 
             {
-				Debug.Log(delta.sqrMagnitude);
+				// Debug.Log(delta.sqrMagnitude);
 				mouseReleased();
 			}
 		}
@@ -95,7 +95,7 @@ public class TouchController : MonoBehaviour {
 				if (groundPlane.Raycast(ray, out rayDistance)){
 					origin_position = ray.GetPoint(rayDistance);
 					player.setMode( PlayerController.PlayerMode.kModeStrech );
-					Debug.Log("strech: " + origin_position);
+					// Debug.Log("strech: " + origin_position);
 				}
 			}
 		}
@@ -113,13 +113,13 @@ public class TouchController : MonoBehaviour {
 		if(groundPlane.Raycast(ray, out rayDistance))
         {
 			delta = origin_position - ray.GetPoint(rayDistance);
-			Debug.Log("delta: " + delta);
+			// Debug.Log("delta: " + delta);
 			
 			foreach (Transform t in player.GetComponentsInChildren<Transform>() ) 
             {
 				if ( t.name == "TrailNode" ) 
                 {
-					t.rotation = Quaternion.LookRotation( delta );
+                    player.updateArrow(delta);
 				}
 			}
 		}
