@@ -73,6 +73,7 @@ public class PlayerController : MonoBehaviour
         {
             case PlayerMode.kModeAim:
                 skillWait();
+                enableCharacter(true);
                 enableArrow(false);
                 break;
             case PlayerMode.kModeStrech:
@@ -81,6 +82,7 @@ public class PlayerController : MonoBehaviour
             case PlayerMode.kModeEmit:
                 run();
                 skillReady();
+                enableCharacter(false);
                 enableArrow(false);
                 break;
             case PlayerMode.kModeAction:
@@ -201,6 +203,15 @@ public class PlayerController : MonoBehaviour
             m_trailNode.gameObject.SetActive(_enabled);
         }
     }
+  
+    private void enableCharacter(bool _enabled)
+    {
+        transform.Find("Character").gameObject.SetActive(_enabled);
+        if (_enabled)
+        {
+            transform.rotation = Quaternion.LookRotation(new Vector3(1, 0, 1));
+        }
+    }
 
     public void updateArrow(Vector3 delta)
     {
@@ -212,12 +223,12 @@ public class PlayerController : MonoBehaviour
         if (Physics.Raycast(trail_arrow.transform.position, new Vector3(delta.x, 0, delta.z), out hitInfo))
         {
             float distance = hitInfo.distance;
-            float new_length = trail_arrow.GetComponent<MeshFilter>().mesh.bounds.size.x * x / 2f;
-            Debug.Log(distance + " " + new_length);
+            float new_length = trail_arrow.GetComponent<MeshFilter>().mesh.bounds.size.x * m_trailArrow.localScale.x / 2f;
+            Debug.Log(distance + " a " + trail_arrow.GetComponent<MeshFilter>().mesh.bounds.size.x * m_trailArrow.localScale.x / 2f);
 
-            if (distance < new_length)
+            if (distance < new_length + 0.1f)
             {
-                m_trailArrow.localScale = new Vector3( distance / trail_arrow.GetComponent<MeshFilter>().mesh.bounds.size.x, 2, 2);
+                m_trailArrow.localScale = new Vector3( (distance - 0.1f) / trail_arrow.GetComponent<MeshFilter>().mesh.bounds.size.x, 2, 2);
             }
         }
         transform.rotation = Quaternion.LookRotation( new Vector3(delta.x, 0, delta.z) );
