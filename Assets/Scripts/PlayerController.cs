@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 public class PlayerController : MonoBehaviour
 {
@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour
     };
 
     public PlayerMode mPlayerMode = PlayerMode.kModeAim;    // current mode
+    public SkillsController skills;
 
     public float fallTime;
     private float mCurrentFallTime;
@@ -71,6 +72,7 @@ public class PlayerController : MonoBehaviour
         switch (mPlayerMode)
         {
             case PlayerMode.kModeAim:
+                skillWait();
                 enableArrow(false);
                 break;
             case PlayerMode.kModeStrech:
@@ -78,6 +80,7 @@ public class PlayerController : MonoBehaviour
                 break;
             case PlayerMode.kModeEmit:
                 run();
+                skillReady();
                 enableArrow(false);
                 break;
             case PlayerMode.kModeAction:
@@ -93,6 +96,10 @@ public class PlayerController : MonoBehaviour
             default:
                 break;
         }
+    }
+
+    private void skillWait(){
+        skills.mode = SkillsController.SkillMode.kModeWait;
     }
 
     public void setMode(PlayerMode _mode)
@@ -143,6 +150,10 @@ public class PlayerController : MonoBehaviour
         //#FIXME set y = 0;
         setMode(PlayerMode.kModeAction);
         rigidbody.AddForce(strech_power * speed);
+    }
+
+    private void skillReady(){ 
+        skills.mode = SkillsController.SkillMode.kModeReady;
     }
 
     private void rotate()
