@@ -19,10 +19,6 @@ public class TouchController : MonoBehaviour {
 	void Update () {
 		// not react when player is running
 		if(player.getMode() == PlayerController.PlayerMode.kModeAction ){
-			if(Input.touches.Length > 0 || Input.GetMouseButtonDown(0)){
-				Debug.Log("tap jump");
-				player.setMode( PlayerController.PlayerMode.kModeJump );
-			}
 		  	return;
 		}
 

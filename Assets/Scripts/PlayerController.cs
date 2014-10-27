@@ -10,14 +10,13 @@ public class PlayerController : MonoBehaviour
         kModeStrech,
         kModeEmit,
         kModeAction,
-        kModeJump,
+        kModeSkill,
         kModeFall,
         kModeWin,
         NULL,
     };
 
     public PlayerMode mPlayerMode = PlayerMode.kModeAim;    // current mode
-    public RotateSliderController slider;
 
     public float fallTime;
     private float mCurrentFallTime;
@@ -70,29 +69,23 @@ public class PlayerController : MonoBehaviour
         switch (mPlayerMode)
         {
             case PlayerMode.kModeAim:
-                hideSlider();
                 enableArrow(false);
                 break;
             case PlayerMode.kModeStrech:
                 enableArrow(true);
-                scanSlider();
                 break;
             case PlayerMode.kModeEmit:
-                stopSlider();
                 run();
                 enableArrow(false);
                 break;
             case PlayerMode.kModeAction:
                 handleAction();
                 break;
-            case PlayerMode.kModeJump:
-                jump();
+            case PlayerMode.kModeSkill:
                 break;
             case PlayerMode.kModeFall:
-                hideSlider();
                 break;
             case PlayerMode.kModeWin:
-                hideSlider();
                 showWinDialog();
                 break;
             default:
@@ -112,21 +105,6 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-    }
-
-    void hideSlider()
-    {      
-        slider.mode = RotateSliderController.RotateSliderMode.kModeHide;
-    }
-
-    void scanSlider()
-    {
-        slider.mode = RotateSliderController.RotateSliderMode.kModeScan;
-    }
-
-    void stopSlider()
-    {
-        slider.mode = RotateSliderController.RotateSliderMode.kModeStop;
     }
 
     void showWinDialog()
@@ -163,13 +141,11 @@ public class PlayerController : MonoBehaviour
         //#FIXME set y = 0;
         setMode(PlayerMode.kModeAction);
         rigidbody.AddForce(strech_power * speed);
-        rotate();
     }
 
     private void rotate()
     {
-        Debug.Log("rotate:" + slider.getRotateDirection());
-        rigidbody.AddTorque(Vector3.back * rotatePower * slider.getRotateDirection());
+        rigidbody.AddTorque(Vector3.back * rotatePower * 1);
     }
 
     private void jump()
