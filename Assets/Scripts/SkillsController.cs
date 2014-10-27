@@ -7,7 +7,7 @@ public class SkillsController : MonoBehaviour {
 
     public enum SkillMode
     {
-        kModeWait=0,
+        kModeWait = 0,
         kModeReady,
         kModeLaunch,
         kModeAction,
@@ -17,7 +17,7 @@ public class SkillsController : MonoBehaviour {
 
     public enum SkillName
     {
-        kJump=0,
+        kJump = 0,
         NULL,
     };
     
@@ -70,7 +70,7 @@ public class SkillsController : MonoBehaviour {
         switch (skillName)
         {
             case "jump":
-                int skillNum = (int)Convert.ChangeType(SkillName.kJump, typeof(int));
+                int skillNum = (int)SkillName.kJump;
                 skills[skillNum].launch();
                 break;
             default:
