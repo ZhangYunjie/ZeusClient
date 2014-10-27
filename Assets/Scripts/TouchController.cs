@@ -28,8 +28,14 @@ public class TouchController : MonoBehaviour {
 			return;
 		}
 
-		foreach( Touch touch in Input.touches )
+        if (Input.touchCount == 2)
         {
+            Vector2 touchPosition1 = Input.GetTouch(0).position;
+            Vector2 touchPosition2 = Input.GetTouch(1).position;
+        }
+        else if (Input.touchCount == 1)
+        {
+            Touch touch = Input.GetTouch(0);
 			if( touch.phase == TouchPhase.Began && player.getMode() == PlayerController.PlayerMode.kModeAim )
 			{
 				Ray ray = Camera.main.ScreenPointToRay(touch.position);

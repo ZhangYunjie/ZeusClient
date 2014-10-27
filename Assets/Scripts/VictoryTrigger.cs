@@ -11,7 +11,7 @@ public class VictoryTrigger : MonoBehaviour
 	void Start () {
         mPlayerObj = GameObject.FindWithTag("Player");
         mWinDialog = GameObject.FindWithTag("WinDialog");
-
+        Debug.Log(mWinDialog);
         if (mPlayerObj)
         {
             mPlayerController = mPlayerObj.GetComponent<PlayerController>();
