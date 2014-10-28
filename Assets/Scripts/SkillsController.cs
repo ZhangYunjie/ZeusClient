@@ -4,6 +4,9 @@ using System;
 
 public class SkillsController : MonoBehaviour {
     public Skill[] skills;
+    private string currentSkill = "";
+    protected GameObject player;
+    protected PlayerController playerController;
 
     public enum SkillMode
     {
@@ -18,6 +21,8 @@ public class SkillsController : MonoBehaviour {
     public enum SkillName
     {
         kJump = 0,
+        kTopspin,
+        kBackspin,
         NULL,
     };
     
@@ -35,7 +40,14 @@ public class SkillsController : MonoBehaviour {
     // Use this for initialization
     void Start () {
         mode = SkillMode.kModeWait;
-        skills = new Skill[1]{ new Jump() };
+        skills = new Skill[3]{ 
+            new Jump(), 
+            new Topspin(),
+            new Backspin()
+        };
+
+        player = GameObject.FindGameObjectWithTag("Player");
+        playerController = player.GetComponent<PlayerController>();
     }
     
     // Update is called once per frame
@@ -57,6 +69,7 @@ public class SkillsController : MonoBehaviour {
                 handleAction();
                 break;
             case SkillMode.kModeEnd:
+                handleEnd();
                 break;
             default:
                 break;
@@ -66,12 +79,42 @@ public class SkillsController : MonoBehaviour {
     public void exec(string skillName){
         if (!enabled)
             return;
-        mode = SkillMode.kModeLaunch;
+        int skillNum = 0;
         switch (skillName)
         {
             case "jump":
-                int skillNum = (int)SkillName.kJump;
+                currentSkill = "jump";
+                skillNum = (int)SkillName.kJump;
                 skills[skillNum].launch();
+                break;
+            case "topspin":
+                currentSkill = "topspin";
+                skillNum = (int)SkillName.kTopspin;
+                skills[skillNum].launch();
+                break;
+            case "backspin":
+                currentSkill = "backspin";
+                skillNum = (int)SkillName.kBackspin;
+                skills[skillNum].launch();
+                break;
+            default:
+                break;
+        }
+        mode = SkillMode.kModeLaunch;
+    }
+
+    private void handleAction()
+    {
+        switch (currentSkill)
+        {
+            case "jump":
+                if(playerController.IsGrounded()) endAction();
+                break;
+            case "topspin":
+                endAction();
+                break;
+            case "backspin":
+                endAction();
                 break;
             default:
                 break;
@@ -82,8 +125,15 @@ public class SkillsController : MonoBehaviour {
         mode = SkillMode.kModeAction;
     }
 
-    private void handleAction()
+    private void endAction()
     {
+        currentSkill = "";
+        mode = SkillMode.kModeEnd;
+    }
+
+    private void handleEnd()
+    {
+        mode = SkillMode.kModeReady;
     }
     
     private void enable(bool will_enabled)

@@ -30,8 +30,6 @@ public class PlayerController : MonoBehaviour
     public float minAngularVelocity = 1.0f; //the angular velocity we use to help determine if the ball is stopped.
 
     public float speed = 200;
-    public float jumpPower = 300;
-    public float rotatePower = 100;
     private float distToGround;
     private Transform m_trailNode;
     private Transform m_trailArrow;
@@ -156,21 +154,6 @@ public class PlayerController : MonoBehaviour
 
     private void skillReady(){ 
         skills.mode = SkillsController.SkillMode.kModeReady;
-    }
-
-    private void rotate()
-    {
-        rigidbody.AddTorque(Vector3.back * rotatePower * 1);
-    }
-
-    private void jump()
-    {
-        setMode(PlayerMode.kModeAction);
-
-        if (IsGrounded())
-        {
-            rigidbody.AddForce(Vector3.up * jumpPower);
-        }
     }
 
     private void handleAction()

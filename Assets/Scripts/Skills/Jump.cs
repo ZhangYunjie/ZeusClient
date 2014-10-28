@@ -11,7 +11,7 @@ public class Jump : Skill
 
         if (playerController.IsGrounded())
         { 
-            Debug.Log("launch");
+            Debug.Log("Jump");
             haveLaunched = true;
             player.rigidbody.AddForce(Vector3.up * jumpPower);
         }
