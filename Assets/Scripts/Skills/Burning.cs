@@ -2,6 +2,8 @@
 using System.Collections;
 
 public class Burning : Skill {
+
+    public float burningForcePower = 200;
     public override void launch(){ 
         Debug.Log(haveLaunched);
         if (haveLaunched)
@@ -9,7 +11,7 @@ public class Burning : Skill {
         
         Debug.Log("Burning");
         haveLaunched = true;
-        player.rigidbody.velocity = player.rigidbody.velocity * 2.0f;
+        player.rigidbody.AddForce(player.rigidbody.velocity.normalized * burningForcePower);
         // reflect*2
         // penetrate
     }
