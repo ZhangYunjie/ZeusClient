@@ -9,15 +9,13 @@ public class Topspin : Skill {
         if (haveLaunched)
             return;
         
-        if (playerController.IsGrounded())
-        { 
-            Debug.Log("Top Spin");
-            haveLaunched = true;
 
-            Vector2 speedDirection = new Vector2(player.rigidbody.velocity.x, player.rigidbody.velocity.z);
-            Vector3 rotateDirection = new Vector3(speedDirection.y / speedDirection.magnitude, 0, - speedDirection.x / speedDirection.magnitude);
+        Debug.Log("Top Spin");
+        haveLaunched = true;
 
-            player.rigidbody.AddTorque(rotateDirection.normalized * rotatePower * topDirection);
-        }
-    }
+        Vector2 speedDirection = new Vector2(player.rigidbody.velocity.x, player.rigidbody.velocity.z);
+        Vector3 rotateDirection = new Vector3(speedDirection.y / speedDirection.magnitude, 0, - speedDirection.x / speedDirection.magnitude);
+
+        player.rigidbody.AddTorque(rotateDirection.normalized * rotatePower * topDirection);
+}
 }
