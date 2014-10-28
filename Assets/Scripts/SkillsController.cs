@@ -22,6 +22,7 @@ public class SkillsController : MonoBehaviour {
     {
         kJump = 0,
         kTopspin,
+        kBackspin,
         NULL,
     };
     
@@ -39,9 +40,10 @@ public class SkillsController : MonoBehaviour {
     // Use this for initialization
     void Start () {
         mode = SkillMode.kModeWait;
-        skills = new Skill[2]{ 
+        skills = new Skill[3]{ 
             new Jump(), 
-            new Topspin() 
+            new Topspin(),
+            new Backspin()
         };
 
         player = GameObject.FindGameObjectWithTag("Player");
@@ -90,14 +92,15 @@ public class SkillsController : MonoBehaviour {
                 skillNum = (int)SkillName.kTopspin;
                 skills[skillNum].launch();
                 break;
+            case "backspin":
+                currentSkill = "backspin";
+                skillNum = (int)SkillName.kBackspin;
+                skills[skillNum].launch();
+                break;
             default:
                 break;
         }
         mode = SkillMode.kModeLaunch;
-    }
-    
-    private void launch(){
-        mode = SkillMode.kModeAction;
     }
 
     private void handleAction()
@@ -110,9 +113,16 @@ public class SkillsController : MonoBehaviour {
             case "topspin":
                 endAction();
                 break;
+            case "backspin":
+                endAction();
+                break;
             default:
                 break;
         }
+    }
+    
+    private void launch(){
+        mode = SkillMode.kModeAction;
     }
 
     private void endAction()
