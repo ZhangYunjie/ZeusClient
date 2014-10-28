@@ -2,7 +2,10 @@
 using System.Collections;
 
 public class TouchesController : MonoBehaviour
-{
+{ 
+    int mDragFingerIndex = -1;
+    GameObject player;
+    PlayerController playerController;
 
     // Use this for initialization
     void Start()
@@ -10,8 +13,8 @@ public class TouchesController : MonoBehaviour
         DragRecognizer dragRecognizer = GetComponent<DragRecognizer>();
         dragRecognizer.OnGesture += onDrag;
 
-        FingerDownDetector fingerDownDector = GetComponent<FingerDownDetector>();
-        fingerDownDector += onFingerDown;
+        player = GameObject.FindWithTag("Player");
+        playerController = player.GetComponent<PlayerController>();
     }
     
     #region FingerGestures Drag-Action
@@ -19,22 +22,32 @@ public class TouchesController : MonoBehaviour
     {
         // First Finger
         FingerGestures.Finger finger = dragGesture.Fingers [0];
-        if (dragGesture == ContinuousGesturePhase.Started)
+        if (dragGesture.Phase == ContinuousGesturePhase.Started)
         {
-            if (dragGesture.Selection == GameObject.FindWithTag("Player"))
+            mDragFingerIndex = finger.Index;
+            if (dragGesture.Selection == player)
             {
+                playerController.setMode(PlayerController.PlayerMode.kModeStrech);
+            }
+        }
+        else if ( mDragFingerIndex == finger.Index)
+        {
+            if( dragGesture.Phase == ContinuousGesturePhase.Updated )
+            {
+                // update the position by converting the current screen position of the finger to a world position on the Z = 0 plane
+                if (playerController.getMode == PlayerController.PlayerMode.kModeStrech)
+                {
+                }
+                else
+                {
+                }
             }
             else
             {
+                // reset our drag finger index
+                mDragFingerIndex = -1;
             }
         }
-    }
-    #endregion
-
-    #region FingerDownEvent FingerDown-Action
-    void onFingerDown(FingerDownEvent fingerDownEvent)
-    {
-        Debug.Log(" Finger Down");
     }
     #endregion
 }
