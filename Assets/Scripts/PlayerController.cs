@@ -32,6 +32,7 @@ public class PlayerController : MonoBehaviour
     private Transform m_trailNode;
     private Transform m_trailArrow;
     private GameObject m_trailArrowMesh;
+    public SkillStatus skillStatus = new SkillStatus();
     
     public Vector3 strech_power
     {
@@ -222,6 +223,21 @@ public class PlayerController : MonoBehaviour
         if (getMode() != PlayerMode.kModeWin)
         {
             setMode(PlayerMode.kModeAim);
+        }
+
+        reset();
+    }
+
+    private void reset()
+    {
+        skillStatus.reset();
+    }
+
+    void OnCollisionExit(Collision collisionInfo) {
+        print("No longer in contact with " + collisionInfo.transform.name);
+        if (skillStatus.reflect_plus)
+        {
+            rigidbody.velocity = rigidbody.velocity * 2;
         }
     }
 }

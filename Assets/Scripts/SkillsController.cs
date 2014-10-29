@@ -27,6 +27,7 @@ public class SkillsController : MonoBehaviour {
         kSpeeding,
         kLeftturn,
         kRightturn,
+        kReflectplus,
         NULL,
     };
     
@@ -44,14 +45,15 @@ public class SkillsController : MonoBehaviour {
     // Use this for initialization
     void Start () {
         mode = SkillMode.kModeWait;
-        skills = new Skill[7]{ 
+        skills = new Skill[8]{ 
             new Jump(), 
             new Topspin(),
             new Backspin(),
             new Burning(),
             new Speeding(),
             new Leftturn(),
-            new Rightturn()
+            new Rightturn(),
+            new Reflectplus()
         };
 
         player = GameObject.FindGameObjectWithTag("Player");
@@ -125,6 +127,11 @@ public class SkillsController : MonoBehaviour {
                 skillNum = (int)SkillName.kRightturn;
                 skills[skillNum].launch();
                 break;
+            case "reflectplus":
+                currentSkill = "reflectplus";
+                skillNum = (int)SkillName.kReflectplus;
+                skills[skillNum].launch();
+                break;
             default:
                 break;
         }
@@ -154,6 +161,9 @@ public class SkillsController : MonoBehaviour {
                 endAction();
                 break;
             case "rightturn":
+                endAction();
+                break;
+            case "reflectplus":
                 endAction();
                 break;
             default:
