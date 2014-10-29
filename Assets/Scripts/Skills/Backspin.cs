@@ -14,7 +14,7 @@ public class Backspin : Skill {
         haveLaunched = true;
 
         Vector2 speedDirection = new Vector2(player.rigidbody.velocity.x, player.rigidbody.velocity.z);
-        Vector3 rotateDirection = new Vector3(speedDirection.y / speedDirection.magnitude, 0, - speedDirection.x / speedDirection.magnitude);
+        Vector3 rotateDirection = new Vector3(speedDirection.y, 0, - speedDirection.x);
 
         player.rigidbody.AddTorque(rotateDirection.normalized * rotatePower * backDirection);
     }
