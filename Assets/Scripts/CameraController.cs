@@ -3,13 +3,13 @@ using System.Collections;
 
 public class CameraController : MonoBehaviour
 {
-    public enum kMode
+    public enum MoveMode
     {
         kModeMoveFree = 0,
         kModeMoveFollow,
     }
 
-    private kMode mCurrentMode;
+    private MoveMode mCurrentMode = MoveMode.kModeMoveFree;
     public GameObject player;
     public float thresHolder_Y;
     private Vector3 offset;
@@ -24,12 +24,15 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-//        Vector3 newPos = player.transform.position + offset;
-//        if (newPos.y < thresHolder_Y)
-//        {
-//            newPos.y = thresHolder_Y;
-//        }
-//        transform.position = newPos;
+        if(player.GetComponent<PlayerController>().getMode() >= PlayerController.PlayerMode.kModeAction)
+        {
+            Vector3 newPos = player.transform.position + offset;
+            if (newPos.y < thresHolder_Y)
+            {
+                newPos.y = thresHolder_Y;
+            }
+            transform.position = newPos;
+        }
     }
 
     void FixedUpdate()
@@ -39,12 +42,12 @@ public class CameraController : MonoBehaviour
         //transform.RotateAround(player.transform.position, Vector3.up, rotateSpeed * moveHorizontal * Time.deltaTime);
     }
 
-    public void setMode(kMode mode)
+    public void setMode(MoveMode mode)
     {
         mCurrentMode = mode;
     }
 
-    public kMode getMode()
+    public MoveMode getMode()
     {
         return mCurrentMode;
     }

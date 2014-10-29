@@ -12,7 +12,8 @@ public class TouchController : MonoBehaviour
 
     TouchMode currentMode = TouchMode.NULL;
     int mDragFingerIndex = -1;
-    float mScaleFactor = 200f;
+    float mZoomScaleFactor = 200f;
+    float mMoveScaleFactor = 500f;
 
     GameObject player;
     PlayerController playerController;
@@ -72,7 +73,7 @@ public class TouchController : MonoBehaviour
                 else
                 {
                     Vector2 deltaMove = -dragGesture.DeltaMove;
-                    Camera.main.transform.Translate(new Vector3(deltaMove.x / mScaleFactor, deltaMove.y / mScaleFactor, 0f));
+                    Camera.main.transform.Translate(new Vector3(deltaMove.x / mMoveScaleFactor, deltaMove.y / mMoveScaleFactor, 0f));
                 }
             }
             else
@@ -115,7 +116,7 @@ public class TouchController : MonoBehaviour
         {
             if (currentMode == TouchMode.kModePinch)
             {
-                float delta = pinchGesture.Delta / mScaleFactor;
+                float delta = pinchGesture.Delta / mZoomScaleFactor;
                 Camera.main.transform.Translate(new Vector3(0f, 0f, delta));
             }
         }
