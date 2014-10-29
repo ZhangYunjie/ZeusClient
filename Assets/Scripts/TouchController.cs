@@ -75,6 +75,15 @@ public class TouchController : MonoBehaviour
     }
     #endregion
 
+    #region FingerGestures Pinch-Action
+    void onPinch(PinchGesture pinchGesture)
+    {
+        if(pinchGesture.Phase == ContinuousGesturePhase.Updated)
+        {
+        }
+    }
+    #endregion
+
     private Vector3 getWorldPos(Vector2 pos)
     {
         float rayDistance;
