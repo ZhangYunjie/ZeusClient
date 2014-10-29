@@ -3,7 +3,17 @@ using System.Collections;
 
 public class TouchController : MonoBehaviour
 { 
+    public enum TouchMode
+    {
+        NULL = 0,
+        kModeDrag,
+        kModePinch,
+    }
+
+    TouchMode currentMode = TouchMode.NULL;
     int mDragFingerIndex = -1;
+    float mScaleFactor = 200f;
+
     GameObject player;
     PlayerController playerController;
 
@@ -16,6 +26,9 @@ public class TouchController : MonoBehaviour
         DragRecognizer dragRecognizer = GetComponent<DragRecognizer>();
         dragRecognizer.OnGesture += onDrag;
 
+        PinchRecognizer pinchRcognizer = GetComponent<PinchRecognizer>();
+        pinchRcognizer.OnGesture += onPinch;
+
         player = GameObject.FindWithTag("Player");
         playerController = player.GetComponent<PlayerController>();
 
@@ -25,6 +38,16 @@ public class TouchController : MonoBehaviour
     #region FingerGestures Drag-Action
     void onDrag(DragGesture dragGesture)
     {
+        if (dragGesture.Fingers.Count != 1)
+        {
+            return;
+        }
+
+        if (currentMode != TouchMode.NULL && currentMode != TouchMode.kModeDrag)
+        {
+            return;
+        }
+    
         // First Finger
         FingerGestures.Finger finger = dragGesture.Fingers [0];
         if (dragGesture.Phase == ContinuousGesturePhase.Started)
@@ -32,9 +55,9 @@ public class TouchController : MonoBehaviour
             mDragFingerIndex = finger.Index;
             if (dragGesture.Selection == player)
             {
-                Debug.Log("aaa");
                 playerController.setMode(PlayerController.PlayerMode.kModeStrech);
             }
+            currentMode = TouchMode.kModeDrag;
         }
         else if ( mDragFingerIndex == finger.Index)
         {
@@ -49,7 +72,7 @@ public class TouchController : MonoBehaviour
                 else
                 {
                     Vector2 deltaMove = -dragGesture.DeltaMove;
-                    Camera.main.transform.Translate(new Vector3(deltaMove.x / 50f, deltaMove.y / 50f, 0f));
+                    Camera.main.transform.Translate(new Vector3(deltaMove.x / mScaleFactor, deltaMove.y / mScaleFactor, 0f));
                 }
             }
             else
@@ -70,6 +93,7 @@ public class TouchController : MonoBehaviour
 
                 mDelta = Vector3.zero;
                 mDragFingerIndex = -1;
+                currentMode = TouchMode.NULL;
             }
         }
     }
@@ -78,8 +102,26 @@ public class TouchController : MonoBehaviour
     #region FingerGestures Pinch-Action
     void onPinch(PinchGesture pinchGesture)
     {
-        if(pinchGesture.Phase == ContinuousGesturePhase.Updated)
+        if (currentMode != TouchMode.NULL && currentMode != TouchMode.kModePinch)
         {
+            return;
+        }
+
+        if(pinchGesture.Phase == ContinuousGesturePhase.Started)
+        {
+            currentMode = TouchMode.kModePinch;
+        }
+        else if(pinchGesture.Phase == ContinuousGesturePhase.Updated)
+        {
+            if (currentMode == TouchMode.kModePinch)
+            {
+                float delta = pinchGesture.Delta / mScaleFactor;
+                Camera.main.transform.Translate(new Vector3(0f, 0f, delta));
+            }
+        }
+        else
+        {
+            currentMode = TouchMode.NULL;
         }
     }
     #endregion
