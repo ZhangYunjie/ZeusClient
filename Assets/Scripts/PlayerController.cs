@@ -31,7 +31,8 @@ public class PlayerController : MonoBehaviour
     private float distToGround;
     private Transform m_trailNode;
     private Transform m_trailArrow;
-   
+    private GameObject m_trailArrowMesh;
+    
     public Vector3 strech_power
     {
         get;
@@ -46,6 +47,7 @@ public class PlayerController : MonoBehaviour
 
         m_trailNode = transform.Find("TrailNode");
         m_trailArrow = m_trailNode.Find("TrailArrow");
+        m_trailArrowMesh = GameObject.FindWithTag("TrailArrow");
         enableArrow(false);
 
         rigidbody.maxAngularVelocity = 50;
@@ -196,15 +198,14 @@ public class PlayerController : MonoBehaviour
         x = x < 5 ? x : 5;
         m_trailArrow.localScale = new Vector3(x, 2, 2);
         RaycastHit hitInfo;
-        GameObject trail_arrow = GameObject.FindWithTag("TrailArrow");
-        if (Physics.Raycast(trail_arrow.transform.position, new Vector3(delta.x, 0, delta.z), out hitInfo))
+        if (Physics.Raycast(m_trailArrowMesh.transform.position, new Vector3(delta.x, 0, delta.z), out hitInfo))
         {
             float distance = hitInfo.distance;
-            float new_length = trail_arrow.GetComponent<MeshFilter>().mesh.bounds.size.x * m_trailArrow.localScale.x / 2f;
+            float new_length = m_trailArrowMesh.GetComponent<MeshFilter>().mesh.bounds.size.x * m_trailArrow.localScale.x / 2f;
 
             if (distance < new_length + 0.1f)
             {
-                m_trailArrow.localScale = new Vector3((distance - 0.1f) / trail_arrow.GetComponent<MeshFilter>().mesh.bounds.size.x, 2, 2);
+                m_trailArrow.localScale = new Vector3((distance - 0.1f) / m_trailArrowMesh.GetComponent<MeshFilter>().mesh.bounds.size.x, 2, 2);
             }
         }
         transform.rotation = Quaternion.LookRotation(new Vector3(delta.x, 0, delta.z));
