@@ -1,161 +1,89 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class TouchController : MonoBehaviour {
+public class TouchController : MonoBehaviour
+{ 
+    int mDragFingerIndex = -1;
+    GameObject player;
+    PlayerController playerController;
 
-	private Vector3 origin_position;
-	private Vector3 delta;
+    Plane mGroundPlane;
+    Vector3 mDelta;
 
-	public PlayerController player;
-	public Plane groundPlane;
+    // Use this for initialization
+    void Start()
+    {
+        DragRecognizer dragRecognizer = GetComponent<DragRecognizer>();
+        dragRecognizer.OnGesture += onDrag;
 
-	// Use this for initialization
-	void Start () {
-		groundPlane = new Plane(Vector3.up, new Vector3(0, 0, 0));
-		delta = new Vector3 ();
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		// not react when player is running
-		if(player.getMode() == PlayerController.PlayerMode.kModeAction ){
-		  	return;
-		}
+        player = GameObject.FindWithTag("Player");
+        playerController = player.GetComponent<PlayerController>();
 
-		mouseStrech ();
-
-		if ( Input.touches.Length <= 0 ) {
-			return;
-		}
-
-        if (Input.touchCount == 2)
+        mGroundPlane = new Plane(Vector3.up, new Vector3(0, 0, 0));
+    }
+    
+    #region FingerGestures Drag-Action
+    void onDrag(DragGesture dragGesture)
+    {
+        // First Finger
+        FingerGestures.Finger finger = dragGesture.Fingers [0];
+        if (dragGesture.Phase == ContinuousGesturePhase.Started)
         {
-            Vector2 touchPosition1 = Input.GetTouch(0).position;
-            Vector2 touchPosition2 = Input.GetTouch(1).position;
+            mDragFingerIndex = finger.Index;
+            if (dragGesture.Selection == player)
+            {
+                Debug.Log("aaa");
+                playerController.setMode(PlayerController.PlayerMode.kModeStrech);
+            }
         }
-        else if (Input.touchCount == 1)
+        else if ( mDragFingerIndex == finger.Index)
         {
-            Touch touch = Input.GetTouch(0);
-			if( touch.phase == TouchPhase.Began && player.getMode() == PlayerController.PlayerMode.kModeAim )
-			{
-				Ray ray = Camera.main.ScreenPointToRay(touch.position);
-				RaycastHit hit;
-				if (Physics.Raycast(ray, out hit))
-				{
-					if(hit.collider.tag == "Player")
-                    {
-						float rayDistance;
-						if (groundPlane.Raycast(ray, out rayDistance))
-                        {
-							origin_position = ray.GetPoint(rayDistance);
-							player.setMode(PlayerController.PlayerMode.kModeStrech);
-							// Debug.Log("strech: " + origin_position);
-						}
-					}
-				}
-			}
-			else if ( touch.phase == TouchPhase.Moved && player.getMode() == PlayerController.PlayerMode.kModeStrech ) 
+            if( dragGesture.Phase == ContinuousGesturePhase.Updated )
             {
-				float rayDistance;
-				Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-				if(groundPlane.Raycast(ray, out rayDistance))
+                // update the position by converting the current screen position of the finger to a world position on the Z = 0 plane
+                if (playerController.getMode() == PlayerController.PlayerMode.kModeStrech)
                 {
-					delta = origin_position - ray.GetPoint(rayDistance);
-                    foreach (Transform t in player.GetComponentsInChildren<Transform>() ) 
+                    mDelta = getWorldPos(dragGesture.StartPosition) - getWorldPos(dragGesture.Position);
+                    playerController.updateArrow(mDelta);
+                }
+                else
+                {
+                    Vector2 deltaMove = -dragGesture.DeltaMove;
+                    Camera.main.transform.Translate(new Vector3(deltaMove.x / 50f, deltaMove.y / 50f, 0f));
+                }
+            }
+            else
+            {
+                if ( playerController.getMode() == PlayerController.PlayerMode.kModeStrech) 
+                {
+                    if(mDelta.sqrMagnitude >= 0.2f)
                     {
-                        if ( t.name == "TrailNode" ) 
-                        {
-                            player.updateArrow(delta);
-                        }                        
+                        //#FIXME limit maximum delta
+                        playerController.strech_power = mDelta;
+                        playerController.setMode( PlayerController.PlayerMode.kModeEmit );
                     }
-				}
-			}
-			else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled) 
-            {
-				// Debug.Log(delta.sqrMagnitude);
-				mouseReleased();
-			}
-		}
-	}
+                    else
+                    {
+                        playerController.setMode( PlayerController.PlayerMode.kModeAim );
+                    }
+                }
 
-	void FixedUpdate(){
-		
-	}
+                mDelta = Vector3.zero;
+                mDragFingerIndex = -1;
+            }
+        }
+    }
+    #endregion
 
-	void mousePushed()
+    private Vector3 getWorldPos(Vector2 pos)
     {
-		//save began touch point
-		origin_position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-		RaycastHit hit;
-		if (Physics.Raycast(ray, out hit))
-		{
-			if(hit.collider.tag == "Player" && player.getMode() == PlayerController.PlayerMode.kModeAim ){
-				float rayDistance;
-				if (groundPlane.Raycast(ray, out rayDistance)){
-					origin_position = ray.GetPoint(rayDistance);
-					player.setMode( PlayerController.PlayerMode.kModeStrech );
-					// Debug.Log("strech: " + origin_position);
-				}
-			}
-		}
-	}
+        float rayDistance;
+        Ray ray = Camera.main.ScreenPointToRay(pos);
 
-	void mouseMoved()
-    {
-		if (player.getMode () != PlayerController.PlayerMode.kModeStrech)
-		{
-			return;
-		}
-
-		float rayDistance;
-		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-		if(groundPlane.Raycast(ray, out rayDistance))
+        if(mGroundPlane.Raycast(ray, out rayDistance))
         {
-			delta = origin_position - ray.GetPoint(rayDistance);
-			// Debug.Log("delta: " + delta);
-			
-			foreach (Transform t in player.GetComponentsInChildren<Transform>() ) 
-            {
-				if ( t.name == "TrailNode" ) 
-                {
-                    player.updateArrow(delta);
-				}
-			}
-		}
-	}
-
-	void mouseReleased()
-    {
-		//save ended touch point
-		if ( player.getMode() == PlayerController.PlayerMode.kModeStrech) 
-		{
-			if(delta.sqrMagnitude >= 0.2)
-			{
-				//#FIXME limit maximum delta
-				player.strech_power = delta;
-				player.setMode( PlayerController.PlayerMode.kModeEmit );
-			}
-			else
-			{
-				player.setMode( PlayerController.PlayerMode.kModeAim );
-			}
-		}
-	}
-	
-	void mouseStrech()
-    {
-		if(Input.GetMouseButtonDown(0))
-		{
-			mousePushed();
-		}
-		else if(Input.GetMouseButtonUp(0))
-		{
-			mouseReleased();
-		}
-		else if ( player.getMode() == PlayerController.PlayerMode.kModeStrech ) 
-		{
-			mouseMoved();
-		}
-	}
+            return ray.GetPoint(rayDistance);
+        }
+        return Vector3.zero;
+    }
 }

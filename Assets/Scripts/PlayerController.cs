@@ -18,14 +18,12 @@ public class PlayerController : MonoBehaviour
 
     public PlayerMode mPlayerMode = PlayerMode.kModeAim;    // current mode
     public SkillsController skills;
-
     public float fallTime;
     private float mCurrentFallTime;
  
     //the time the ball has to be "stopped before it registers"
-    public  float requiredStoppedTime   = 1.0f;
-    private float mStoppedTime         = 0f;
-
+    public  float requiredStoppedTime = 1.0f;
+    private float mStoppedTime = 0f;
     public float minVelocity = 0.2f;        //the velocity we use to determine its stopped
     public float minAngularVelocity = 1.0f; //the angular velocity we use to help determine if the ball is stopped.
 
@@ -40,21 +38,15 @@ public class PlayerController : MonoBehaviour
         set;
     }
 
-    public bool is_running
-    {
-        get;
-        set;
-    }
-
     // Use this for initialization
     void Start()
     {
         strech_power = new Vector3();
         distToGround = collider.bounds.extents.y;
 
-        m_trailNode  = transform.Find ("TrailNode");
-        m_trailArrow = m_trailNode.Find ("TrailArrow");
-        enableArrow( false );
+        m_trailNode = transform.Find("TrailNode");
+        m_trailArrow = m_trailNode.Find("TrailArrow");
+        enableArrow(false);
 
         rigidbody.maxAngularVelocity = 50;
     }
@@ -98,7 +90,8 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void skillWait(){
+    private void skillWait()
+    {
         skills.mode = SkillsController.SkillMode.kModeWait;
     }
 
@@ -152,7 +145,8 @@ public class PlayerController : MonoBehaviour
         rigidbody.AddForce(strech_power * speed);
     }
 
-    private void skillReady(){ 
+    private void skillReady()
+    { 
         skills.mode = SkillsController.SkillMode.kModeReady;
     }
 
@@ -160,12 +154,12 @@ public class PlayerController : MonoBehaviour
     {
         float speed = Mathf.Abs(rigidbody.velocity.sqrMagnitude);
 
-        if(speed < minVelocity)
+        if (speed < minVelocity)
         {
             mStoppedTime += Time.deltaTime;
         }
    
-        if(mStoppedTime > requiredStoppedTime)
+        if (mStoppedTime > requiredStoppedTime)
         {
             Debug.Log("mStoppedTime: " + mStoppedTime);
             Debug.Log("speed: " + speed);
@@ -181,7 +175,7 @@ public class PlayerController : MonoBehaviour
 
     private void enableArrow(bool _enabled)
     {
-        if(m_trailNode)
+        if (m_trailNode)
         {
             m_trailNode.gameObject.SetActive(_enabled);
         }
@@ -207,14 +201,13 @@ public class PlayerController : MonoBehaviour
         {
             float distance = hitInfo.distance;
             float new_length = trail_arrow.GetComponent<MeshFilter>().mesh.bounds.size.x * m_trailArrow.localScale.x / 2f;
-            Debug.Log(distance + " a " + trail_arrow.GetComponent<MeshFilter>().mesh.bounds.size.x * m_trailArrow.localScale.x / 2f);
 
             if (distance < new_length + 0.1f)
             {
-                m_trailArrow.localScale = new Vector3( (distance - 0.1f) / trail_arrow.GetComponent<MeshFilter>().mesh.bounds.size.x, 2, 2);
+                m_trailArrow.localScale = new Vector3((distance - 0.1f) / trail_arrow.GetComponent<MeshFilter>().mesh.bounds.size.x, 2, 2);
             }
         }
-        transform.rotation = Quaternion.LookRotation( new Vector3(delta.x, 0, delta.z) );
+        transform.rotation = Quaternion.LookRotation(new Vector3(delta.x, 0, delta.z));
     }
 
     private void stopPlayer()
