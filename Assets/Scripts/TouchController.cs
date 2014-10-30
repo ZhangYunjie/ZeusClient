@@ -9,17 +9,16 @@ public class TouchController : MonoBehaviour
         kModeDrag,
         kModePinch,
     }
+    TouchMode mCurrentMode = TouchMode.NULL;
 
-    TouchMode currentMode = TouchMode.NULL;
-    int mDragFingerIndex = -1;
+    int   mDragFingerIndex = -1;
     float mZoomScaleFactor = 200f;
     float mMoveScaleFactor = 500f;
 
-    GameObject player;
-    PlayerController playerController;
-
-    Plane mGroundPlane;
-    Vector3 mDelta;
+    GameObject       mPlayer;
+    PlayerController mPlayerController;
+    Plane            mGroundPlane;
+    Vector3          mDelta;
 
     // Use this for initialization
     void Start()
@@ -30,8 +29,8 @@ public class TouchController : MonoBehaviour
         PinchRecognizer pinchRcognizer = GetComponent<PinchRecognizer>();
         pinchRcognizer.OnGesture += onPinch;
 
-        player = GameObject.FindWithTag("Player");
-        playerController = player.GetComponent<PlayerController>();
+        mPlayer = GameObject.FindWithTag("Player");
+        mPlayerController = mPlayer.GetComponent<PlayerController>();
 
         mGroundPlane = new Plane(Vector3.up, new Vector3(0, 0, 0));
     }
@@ -44,7 +43,7 @@ public class TouchController : MonoBehaviour
             return;
         }
 
-        if (currentMode != TouchMode.NULL && currentMode != TouchMode.kModeDrag)
+        if (mCurrentMode != TouchMode.NULL && mCurrentMode != TouchMode.kModeDrag)
         {
             return;
         }
@@ -54,21 +53,21 @@ public class TouchController : MonoBehaviour
         if (dragGesture.Phase == ContinuousGesturePhase.Started)
         {
             mDragFingerIndex = finger.Index;
-            if (dragGesture.Selection == player)
+            if (dragGesture.Selection == mPlayer && mPlayerController.getMode() == PlayerController.PlayerMode.kModeAim)
             {
-                playerController.setMode(PlayerController.PlayerMode.kModeStrech);
+                mPlayerController.setMode(PlayerController.PlayerMode.kModeStrech);
             }
-            currentMode = TouchMode.kModeDrag;
+            mCurrentMode = TouchMode.kModeDrag;
         }
         else if ( mDragFingerIndex == finger.Index)
         {
             if( dragGesture.Phase == ContinuousGesturePhase.Updated )
             {
                 // update the position by converting the current screen position of the finger to a world position on the Z = 0 plane
-                if (playerController.getMode() == PlayerController.PlayerMode.kModeStrech)
+                if (mPlayerController.getMode() == PlayerController.PlayerMode.kModeStrech)
                 {
                     mDelta = getWorldPos(dragGesture.StartPosition) - getWorldPos(dragGesture.Position);
-                    playerController.updateArrow(mDelta);
+                    mPlayerController.updateArrow(mDelta);
                 }
                 else
                 {
@@ -78,23 +77,26 @@ public class TouchController : MonoBehaviour
             }
             else
             {
-                if ( playerController.getMode() == PlayerController.PlayerMode.kModeStrech) 
+                Debug.Log("Phase: " + dragGesture.Phase);
+                Debug.Log("Finger: " + finger.Index);
+                Debug.Log("Finger Count: " + dragGesture.Fingers.Count);
+                if ( mPlayerController.getMode() == PlayerController.PlayerMode.kModeStrech) 
                 {
                     if(mDelta.sqrMagnitude >= 0.2f)
                     {
                         //#FIXME limit maximum delta
-                        playerController.strech_power = mDelta;
-                        playerController.setMode( PlayerController.PlayerMode.kModeEmit );
+                        mPlayerController.strech_power = mDelta;
+                        mPlayerController.setMode( PlayerController.PlayerMode.kModeEmit );
                     }
                     else
                     {
-                        playerController.setMode( PlayerController.PlayerMode.kModeAim );
+                        mPlayerController.setMode( PlayerController.PlayerMode.kModeAim );
                     }
                 }
 
-                mDelta = Vector3.zero;
+                mDelta           = Vector3.zero;
                 mDragFingerIndex = -1;
-                currentMode = TouchMode.NULL;
+                mCurrentMode     = TouchMode.NULL;
             }
         }
     }
@@ -103,18 +105,18 @@ public class TouchController : MonoBehaviour
     #region FingerGestures Pinch-Action
     void onPinch(PinchGesture pinchGesture)
     {
-        if (currentMode != TouchMode.NULL && currentMode != TouchMode.kModePinch)
+        if (mCurrentMode != TouchMode.NULL && mCurrentMode != TouchMode.kModePinch)
         {
             return;
         }
 
         if(pinchGesture.Phase == ContinuousGesturePhase.Started)
         {
-            currentMode = TouchMode.kModePinch;
+            mCurrentMode = TouchMode.kModePinch;
         }
         else if(pinchGesture.Phase == ContinuousGesturePhase.Updated)
         {
-            if (currentMode == TouchMode.kModePinch)
+            if (mCurrentMode == TouchMode.kModePinch)
             {
                 float delta = pinchGesture.Delta / mZoomScaleFactor;
                 Camera.main.transform.Translate(new Vector3(0f, 0f, delta));
@@ -122,7 +124,7 @@ public class TouchController : MonoBehaviour
         }
         else
         {
-            currentMode = TouchMode.NULL;
+            mCurrentMode = TouchMode.NULL;
         }
     }
     #endregion

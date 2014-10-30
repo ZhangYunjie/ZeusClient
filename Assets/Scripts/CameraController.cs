@@ -31,7 +31,7 @@ public class CameraController : MonoBehaviour
             {
                 newPos.y = thresHolder_Y;
             }
-            transform.position = newPos;
+            transform.position = new Vector3(newPos.x, transform.position.y, newPos.z);
         }
     }
 
