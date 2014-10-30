@@ -77,9 +77,6 @@ public class TouchController : MonoBehaviour
             }
             else
             {
-                Debug.Log("Phase: " + dragGesture.Phase);
-                Debug.Log("Finger: " + finger.Index);
-                Debug.Log("Finger Count: " + dragGesture.Fingers.Count);
                 if ( mPlayerController.getMode() == PlayerController.PlayerMode.kModeStrech) 
                 {
                     if(mDelta.sqrMagnitude >= 0.2f)
