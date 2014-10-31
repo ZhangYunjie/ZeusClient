@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
     private float mCurrentFallTime;
  
     //the time the ball has to be "stopped before it registers"
-    public  float requiredStoppedTime = 1.0f;
+    public  float requiredStoppedTime = 2.0f;
     private float mStoppedTime = 0f;
     public float minVelocity = 0.2f;        //the velocity we use to determine its stopped
     public float minAngularVelocity = 1.0f; //the angular velocity we use to help determine if the ball is stopped.
