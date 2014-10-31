@@ -43,7 +43,7 @@ public class TouchController : MonoBehaviour
             return;
         }
 
-        if (mCurrentMode != TouchMode.NULL && mCurrentMode != TouchMode.kModeDrag)
+        if (mCurrentMode > TouchMode.kModeDrag)
         {
             return;
         }
@@ -102,7 +102,7 @@ public class TouchController : MonoBehaviour
     #region FingerGestures Pinch-Action
     void onPinch(PinchGesture pinchGesture)
     {
-        if (mCurrentMode != TouchMode.NULL && mCurrentMode != TouchMode.kModePinch)
+        if (mCurrentMode > TouchMode.kModePinch)
         {
             return;
         }
