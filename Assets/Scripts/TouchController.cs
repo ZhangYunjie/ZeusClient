@@ -45,6 +45,13 @@ public class TouchController : MonoBehaviour
 
         if (mCurrentMode > TouchMode.kModeDrag)
         {
+            if (mPlayerController.getMode() == PlayerController.PlayerMode.kModeStrech) 
+            {
+                mPlayerController.setMode( PlayerController.PlayerMode.kModeAim );
+            }
+            mDelta           = Vector3.zero;
+            mDragFingerIndex = -1;
+            mCurrentMode     = TouchMode.NULL;
             return;
         }
     
