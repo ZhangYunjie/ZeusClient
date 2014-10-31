@@ -51,7 +51,6 @@ public class TouchController : MonoBehaviour
             }
             mDelta           = Vector3.zero;
             mDragFingerIndex = -1;
-            mCurrentMode     = TouchMode.NULL;
             return;
         }
     
