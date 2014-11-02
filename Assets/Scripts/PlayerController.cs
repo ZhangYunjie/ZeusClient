@@ -235,8 +235,8 @@ public class PlayerController : MonoBehaviour
     }
 
     void OnCollisionExit(Collision collisionInfo) {
-        print("No longer in contact with " + collisionInfo.transform.name);
-        if (skillStatus.reflect_plus)
+        print("No longer in contact with " + collisionInfo.transform.name + ", " + collisionInfo.transform.tag);
+        if (skillStatus.reflect_plus && collisionInfo.transform.tag != "Ground")
         {
             rigidbody.velocity = rigidbody.velocity * 2;
         }

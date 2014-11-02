@@ -87,6 +87,7 @@ public class SkillsController : MonoBehaviour {
     }
 
     public void exec(string skillName){
+        Debug.Log("exec:" + skillName);
         if (!enabled)
             return;
         int skillNum = 0;
