@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class Rightturn : Skill {
-    public float turnPower = 200;
+    public float turnPower = 300;
     public override void launch(){ 
         Debug.Log(haveLaunched);
         if (haveLaunched)

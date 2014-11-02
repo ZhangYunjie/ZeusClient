@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Jump : Skill
 {
-    public float jumpPower = 200;
+    public float jumpPower = 300;
     public override void launch(){ 
         Debug.Log(haveLaunched);
         if (haveLaunched)

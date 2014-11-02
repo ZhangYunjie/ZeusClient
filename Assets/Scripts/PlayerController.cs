@@ -33,6 +33,7 @@ public class PlayerController : MonoBehaviour
     private Transform m_trailArrow;
     private GameObject m_trailArrowMesh;
     public SkillStatus skillStatus = new SkillStatus();
+    public int attack = 40;
     
     public Vector3 strech_power
     {
@@ -234,8 +235,8 @@ public class PlayerController : MonoBehaviour
     }
 
     void OnCollisionExit(Collision collisionInfo) {
-        print("No longer in contact with " + collisionInfo.transform.name);
-        if (skillStatus.reflect_plus)
+        print("No longer in contact with " + collisionInfo.transform.name + ", " + collisionInfo.transform.tag);
+        if (skillStatus.reflect_plus && collisionInfo.transform.tag != "Ground")
         {
             rigidbody.velocity = rigidbody.velocity * 2;
         }
