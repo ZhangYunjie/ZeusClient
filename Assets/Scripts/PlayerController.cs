@@ -33,6 +33,7 @@ public class PlayerController : MonoBehaviour
     private Transform m_trailArrow;
     private GameObject m_trailArrowMesh;
     public SkillStatus skillStatus = new SkillStatus();
+    public int attack = 40;
     
     public Vector3 strech_power
     {
