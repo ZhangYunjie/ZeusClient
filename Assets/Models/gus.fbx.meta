@@ -32,6 +32,7 @@ ModelImporter:
     2300008: Sphere.002
     2300010: Sphere.003
     2300012: Sphere.004
+    2300014: //RootNode
     3300000: Gus
     3300002: Plane
     3300004: Sphere
@@ -39,6 +40,7 @@ ModelImporter:
     3300008: Sphere.002
     3300010: Sphere.003
     3300012: Sphere.004
+    3300014: //RootNode
     4300000: Sphere.004
     4300002: Sphere.003
     4300004: Sphere.002
