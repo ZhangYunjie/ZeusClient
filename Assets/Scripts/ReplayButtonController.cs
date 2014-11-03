@@ -18,7 +18,10 @@ public class ReplayButtonController : MonoBehaviour
    
     void OnClick()
     {
-        Debug.Log("replay");
+        if (FingerGestures.Instance)
+        {
+            Destroy(FingerGestures.Instance);
+        }
         Application.LoadLevel ("Map1");
     }
    
