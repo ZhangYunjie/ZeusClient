@@ -12,8 +12,8 @@ public class TouchController : MonoBehaviour
     TouchMode mCurrentMode = TouchMode.NULL;
 
     int   mDragFingerIndex = -1;
-    float mZoomScaleFactor = 20f;
-    float mMoveScaleFactor = 50f;
+    float mZoomScaleFactor = 50f;
+    float mMoveScaleFactor = 100f;
 
     GameObject       mPlayer;
     PlayerController mPlayerController;
