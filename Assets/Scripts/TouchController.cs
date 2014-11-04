@@ -78,7 +78,7 @@ public class TouchController : MonoBehaviour
                 else
                 {
                     Vector2 deltaMove = -dragGesture.DeltaMove;
-                    Camera.main.transform.Translate(new Vector3(deltaMove.x / mMoveScaleFactor, deltaMove.y / mMoveScaleFactor, 0f));
+                    Camera.main.transform.Translate(new Vector3(deltaMove.x / mMoveScaleFactor, deltaMove.y / mMoveScaleFactor, 0f), Space.World);
                 }
             }
             else
