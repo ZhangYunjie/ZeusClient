@@ -10,6 +10,6 @@ public class Reflectplus : Skill {
         Debug.Log("reflectplus");
         haveLaunched = true;
 
-        playerController.skillStatus.reflect_plus = true;
+        playerController.skillStatus.gainRefelctStatus();
     }
 }
