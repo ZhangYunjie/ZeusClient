@@ -18,6 +18,9 @@ public class CameraController : MonoBehaviour
     void Start()
     {
         thresHolder_Y = 3f;
+        GameObject playerObj = GameObject.FindWithTag("Player");
+        this.transform.position = playerObj.transform.position + (new Vector3(-5, 5, -2));
+        this.transform.LookAt(playerObj.transform.position + (new Vector3(2, 1, 0)));
         offset = transform.position - player.transform.position;
     }
     
