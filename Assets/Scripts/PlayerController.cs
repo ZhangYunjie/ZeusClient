@@ -238,7 +238,8 @@ public class PlayerController : MonoBehaviour
         print("No longer in contact with " + collisionInfo.transform.name + ", " + collisionInfo.transform.tag);
         if (skillStatus.reflect_plus && collisionInfo.transform.tag != "Ground")
         {
-            rigidbody.velocity = rigidbody.velocity * skillStatus.getReflectPlusRate();
+            float reflectPlusRate = skillStatus.getReflectPlusRate();
+            rigidbody.velocity = new Vector3(rigidbody.velocity.x * reflectPlusRate, rigidbody.velocity.y, rigidbody.velocity.z * reflectPlusRate);
         }
     }
 }
