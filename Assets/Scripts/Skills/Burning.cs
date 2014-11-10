@@ -4,6 +4,11 @@ using System.Collections;
 public class Burning : Skill {
 
     public float burningForcePower = 200;
+    public Burning()
+    {
+        canLaunchBefore = false;
+        canLaunchDuringAction = true;
+    }
     public override void launch(){ 
         Debug.Log(haveLaunched);
         if (haveLaunched)

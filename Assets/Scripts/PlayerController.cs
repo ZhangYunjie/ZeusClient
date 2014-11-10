@@ -51,6 +51,7 @@ public class PlayerController : MonoBehaviour
         m_trailArrow = m_trailNode.Find("TrailArrow");
         m_trailArrowMesh = GameObject.FindWithTag("TrailArrow");
         enableArrow(false);
+        skillReady();
 
         rigidbody.maxAngularVelocity = 50;
     }
@@ -66,7 +67,6 @@ public class PlayerController : MonoBehaviour
         switch (mPlayerMode)
         {
             case PlayerMode.kModeAim:
-                skillWait();
                 enableCharacter(true);
                 enableArrow(false);
                 break;
@@ -75,7 +75,6 @@ public class PlayerController : MonoBehaviour
                 break;
             case PlayerMode.kModeEmit:
                 run();
-                skillReady();
                 enableCharacter(false);
                 enableArrow(false);
                 break;
@@ -94,14 +93,27 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void skillReady()
+    {
+        skills.transmitToReady();
+    }
+
     private void skillWait()
     {
-        skills.mode = SkillsController.SkillMode.kModeWait;
+        skills.transmitToWait();
     }
 
     public void setMode(PlayerMode _mode)
     {
         mPlayerMode = _mode;
+
+        if (_mode == PlayerMode.kModeAim)
+            skillReady();
+        else if (_mode == PlayerMode.kModeStrech)
+            skillWait();
+        else if (_mode == PlayerMode.kModeAction)
+            skillReady();
+
     }
 
     public PlayerMode getMode()
@@ -146,12 +158,10 @@ public class PlayerController : MonoBehaviour
        
         //#FIXME set y = 0;
         setMode(PlayerMode.kModeAction);
-        rigidbody.AddForce(strech_power * speed);
-    }
-
-    private void skillReady()
-    { 
-        skills.mode = SkillsController.SkillMode.kModeReady;
+        if(skillStatus.speeding)
+            rigidbody.AddForce(strech_power * speed * skillStatus.getSpeedingRate());
+        else
+            rigidbody.AddForce(strech_power * speed);
     }
 
     private void handleAction()
@@ -232,6 +242,9 @@ public class PlayerController : MonoBehaviour
     private void reset()
     {
         skillStatus.reset();
+        skills.coolDownAll();
+        skillReady();
+
     }
 
     void OnCollisionExit(Collision collisionInfo) {

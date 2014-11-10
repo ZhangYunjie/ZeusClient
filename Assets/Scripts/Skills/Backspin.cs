@@ -4,6 +4,11 @@ using System.Collections;
 public class Backspin : Skill {
     private int backDirection = -1;
     public float rotatePower = 100;
+    public Backspin()
+    {
+        canLaunchBefore = false;
+        canLaunchDuringAction = true;
+    }
     public override void launch(){ 
         Debug.Log(haveLaunched);
         if (haveLaunched)

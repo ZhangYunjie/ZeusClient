@@ -4,6 +4,11 @@ using System.Collections;
 public class Topspin : Skill {
     private int topDirection = 1;
     public float rotatePower = 100;
+    public Topspin()
+    {
+        canLaunchBefore = false;
+        canLaunchDuringAction = true;
+    }
     public override void launch(){ 
         Debug.Log(haveLaunched);
         if (haveLaunched)

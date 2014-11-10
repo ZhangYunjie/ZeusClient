@@ -3,6 +3,11 @@ using System.Collections;
 
 public class Rightturn : Skill {
     public float turnPower = 300;
+    public Rightturn()
+    {
+        canLaunchBefore = false;
+        canLaunchDuringAction = true;
+    }
     public override void launch(){ 
         Debug.Log(haveLaunched);
         if (haveLaunched)
