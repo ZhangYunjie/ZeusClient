@@ -35,12 +35,6 @@ public class SkillsController : MonoBehaviour {
         get;
         set;
     }
-
-    public bool enabled
-    {
-        get;
-        set;
-    }
     
     // Use this for initialization
     void Start () {
@@ -65,14 +59,10 @@ public class SkillsController : MonoBehaviour {
         switch (mode)
         {
             case SkillMode.kModeWait:
-                coolDownAll();
-                enable(false);
                 break;
             case SkillMode.kModeReady:
-                enable(true);
                 break;
             case SkillMode.kModeLaunch:
-                enable(false);
                 launch();
                 break;
             case SkillMode.kModeAction:
@@ -88,8 +78,6 @@ public class SkillsController : MonoBehaviour {
 
     public void exec(string skillName){
         Debug.Log("exec:" + skillName);
-        if (!enabled)
-            return;
         int skillNum = 0;
         switch (skillName)
         {
@@ -184,15 +172,35 @@ public class SkillsController : MonoBehaviour {
 
     private void handleEnd()
     {
-        mode = SkillMode.kModeReady;
+        transmitToReady();
     }
     
     private void enable(bool will_enabled)
     {
-        if(enabled != will_enabled) enabled = will_enabled;
+        foreach (Skill skill in skills)
+        {
+            if(playerController.getMode() == PlayerController.PlayerMode.kModeAim)
+                skill.enabled = will_enabled && skill.canLaunchBefore;
+            else if(playerController.getMode() == PlayerController.PlayerMode.kModeAction)
+                skill.enabled = will_enabled && skill.canLaunchDuringAction;
+            else
+                skill.enabled = will_enabled;
+        }
+    }
+
+    public void transmitToReady()
+    {
+        mode = SkillMode.kModeReady;
+        enable(true);
+    }
+
+    public void transmitToWait()
+    {
+        mode = SkillMode.kModeReady;
+        enable(false);
     }
     
-    private void coolDownAll()
+    public void coolDownAll()
     {
         foreach (Skill skill in skills)
         {

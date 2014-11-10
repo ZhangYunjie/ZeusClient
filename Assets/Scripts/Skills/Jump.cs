@@ -4,6 +4,13 @@ using System.Collections;
 public class Jump : Skill
 {
     public float jumpPower = 300;
+
+    public Jump()
+    {
+        canLaunchBefore = false;
+        canLaunchDuringAction = true;
+    }
+
     public override void launch(){ 
         Debug.Log(haveLaunched);
         if (haveLaunched)
