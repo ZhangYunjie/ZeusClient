@@ -8,20 +8,24 @@ public class SkillButtonController : MonoBehaviour {
     protected string skillName;
     
     // Use this for initialization
-    public void Start () {
+    protected void Start () {
         player = GameObject.FindGameObjectWithTag("Player");
         skillsController = GameObject.FindGameObjectWithTag("Skills").GetComponent<SkillsController>();
     }
     
     // Update is called once per frame
-    void Update () {
-        bool will_enabled = skillsController.skills[skillNum].getEnabled();
+    protected void Update () {
+        Skill currentSkill = skillsController.skills [skillNum];
+        bool will_enabled = currentSkill.getEnabled();
         UIButton button = GetComponent<UIButton>();
+
         if (button.isEnabled != will_enabled)
         {
-            Debug.Log("enable: " + skillsController.skills[skillNum].enabled);
             button.isEnabled = will_enabled;
         }
+
+        if (currentSkill.canLaunchBefore && currentSkill.haveLaunched)
+            button.SendMessage("OnHover", true);
     }
 
     
