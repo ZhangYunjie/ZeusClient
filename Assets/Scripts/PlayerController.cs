@@ -147,6 +147,9 @@ public class PlayerController : MonoBehaviour
         //#FIXME set y = 0;
         setMode(PlayerMode.kModeAction);
         rigidbody.AddForce(strech_power * speed);
+
+        CameraController cameraController = Camera.main.GetComponent<CameraController>();
+        cameraController.setMode(CameraController.MoveMode.kModeMoveFollow);
     }
 
     private void skillReady()

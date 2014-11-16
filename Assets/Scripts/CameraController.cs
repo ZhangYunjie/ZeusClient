@@ -6,43 +6,52 @@ public class CameraController : MonoBehaviour
     public enum MoveMode
     {
         kModeMoveFree = 0,
+        kModeMoveSmooth,
         kModeMoveFollow,
+        kModeMoveStop,
+        kModeMoving,
     }
 
-    private MoveMode mCurrentMode = MoveMode.kModeMoveFree;
     public GameObject player;
     public float thresHolder_Y;
-    private Vector3 offset;
+    public Vector3 cameraOffset;
+
+    public float mZoomScaleFactor = 20f;
+    public float mMoveScaleFactor = 50f;
+    
+    private MoveMode mCurrentMode = MoveMode.kModeMoveFree;
 
     // Use this for initialization
     void Start()
     {
-        thresHolder_Y = 3f;
         GameObject playerObj = GameObject.FindWithTag("Player");
-        this.transform.position = playerObj.transform.position + (new Vector3(-5, 5, -5));
+        this.transform.position = playerObj.transform.position + cameraOffset;
         this.transform.LookAt(playerObj.transform.position);
-        offset = transform.position - player.transform.position;
     }
     
     // Update is called once per frame
     void Update()
     {
-        if(player.GetComponent<PlayerController>().getMode() >= PlayerController.PlayerMode.kModeAction)
+        switch(mCurrentMode)
         {
-            Vector3 newPos = player.transform.position + offset;
-            if (newPos.y < thresHolder_Y)
-            {
-                newPos.y = thresHolder_Y;
-            }
-            transform.position = new Vector3(newPos.x, transform.position.y, newPos.z);
+
+            case MoveMode.kModeMoveSmooth:
+                moveSmooth();
+                break;
+            case MoveMode.kModeMoveFollow:
+                followPlayer();
+                break;
+            case MoveMode.kModeMoveFree:
+            case MoveMode.kModeMoveStop:
+            case MoveMode.kModeMoving:
+            default:
+                break;
         }
     }
 
     void FixedUpdate()
     {
-        //float moveHorizontal = Input.GetAxis("Horizontal");
 
-        //transform.RotateAround(player.transform.position, Vector3.up, rotateSpeed * moveHorizontal * Time.deltaTime);
     }
 
     public void setMode(MoveMode mode)
@@ -55,5 +64,45 @@ public class CameraController : MonoBehaviour
         return mCurrentMode;
     }
 
+    public void translateCamera(Vector2 deltaMove)
+    {
+        if(mCurrentMode == MoveMode.kModeMoveStop) return;
+        Vector3 moveDistance = deltaMove.y * transform.forward / mMoveScaleFactor + deltaMove.x * transform.right /mMoveScaleFactor;
+        moveDistance.y = 0f;
+        transform.Translate(moveDistance, Space.World);
 
+        if(mCurrentMode == MoveMode.kModeMoveFollow) mCurrentMode = MoveMode.kModeMoveSmooth;
+    }
+
+    public void pinchCamera(float pinchDelta)
+    {
+        if(mCurrentMode == MoveMode.kModeMoveStop) return;
+        float delta = pinchDelta / mZoomScaleFactor;
+        Camera.main.transform.Translate(new Vector3(0f, 0f, delta));
+    }
+
+    private void moveSmooth()
+    {
+        Vector3 delta = player.transform.position + cameraOffset - transform.position;
+        if(delta.sqrMagnitude < 1.0f)
+        {
+            mCurrentMode = MoveMode.kModeMoveFollow;
+            return;
+        }
+        transform.Translate(delta * 1.0f / delta.sqrMagnitude, Space.World);
+    }
+    
+    private void followPlayer()
+    {      
+        Vector3 newPos = player.transform.position + cameraOffset;
+        if (newPos.y < thresHolder_Y)
+        {
+            mCurrentMode = MoveMode.kModeMoveStop;
+            return;
+        }
+        transform.position = new Vector3(newPos.x, transform.position.y, newPos.z);
+  
+    }
+    
+    
 }

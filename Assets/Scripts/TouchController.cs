@@ -12,11 +12,10 @@ public class TouchController : MonoBehaviour
     TouchMode mCurrentMode = TouchMode.NULL;
 
     int   mDragFingerIndex = -1;
-    float mZoomScaleFactor = 20f;
-    float mMoveScaleFactor = 50f;
 
     GameObject       mPlayer;
     PlayerController mPlayerController;
+    CameraController mCameraController;
     Plane            mGroundPlane;
     Vector3          mDelta;
 
@@ -31,6 +30,7 @@ public class TouchController : MonoBehaviour
 
         mPlayer = GameObject.FindWithTag("Player");
         mPlayerController = mPlayer.GetComponent<PlayerController>();
+        mCameraController = Camera.main.GetComponent<CameraController>();
 
         mGroundPlane = new Plane(Vector3.up, new Vector3(0, 0, 0));
     }
@@ -77,10 +77,8 @@ public class TouchController : MonoBehaviour
                 }
                 else
                 {
-                    Vector2 deltaMove = -dragGesture.DeltaMove;
-                    Vector3 moveDistance = deltaMove.y * Camera.main.transform.forward / mMoveScaleFactor + deltaMove.x * Camera.main.transform.right /mMoveScaleFactor;
-                    moveDistance.y = 0f;
-                    Camera.main.transform.Translate(moveDistance, Space.World);
+                    // TODO:when translate the camera, do not use the smooth move.
+                    mCameraController.translateCamera(-dragGesture.DeltaMove);
                 }
             }
             else
@@ -100,8 +98,8 @@ public class TouchController : MonoBehaviour
                 }
 
                 mDelta           = Vector3.zero;
-                mDragFingerIndex = -1;
                 mCurrentMode     = TouchMode.NULL;
+                mDragFingerIndex = -1;
             }
         }
     }
@@ -123,8 +121,7 @@ public class TouchController : MonoBehaviour
         {
             if (mCurrentMode == TouchMode.kModePinch)
             {
-                float delta = pinchGesture.Delta / mZoomScaleFactor;
-                Camera.main.transform.Translate(new Vector3(0f, 0f, delta));
+                mCameraController.pinchCamera(pinchGesture.Delta);
             }
         }
         else
