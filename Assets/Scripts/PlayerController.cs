@@ -34,6 +34,7 @@ public class PlayerController : MonoBehaviour
     private GameObject m_trailArrowMesh;
     public SkillStatus skillStatus = new SkillStatus();
     public int attack = 40;
+    public Vector3 ground_collid_point;
     
     public Vector3 strech_power
     {
@@ -54,6 +55,7 @@ public class PlayerController : MonoBehaviour
         skillReady();
 
         rigidbody.maxAngularVelocity = 50;
+        Vector3? ground_collid_point = null;
     }
     
     // Update is called once per frame
@@ -247,12 +249,29 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    void OnCollisionEnter(Collision collisionInfo){
+        if (collisionInfo.transform.tag != "Ground")
+            return;
+        ContactPoint contact = collisionInfo.contacts[0];
+        ground_collid_point = contact.point;
+    }
+
+    void OnCollisionStay(Collision collisionInfo){
+        if (collisionInfo.transform.tag != "Ground")
+            return;
+        ContactPoint contact = collisionInfo.contacts[0];
+        ground_collid_point = contact.point;
+    }
+
     void OnCollisionExit(Collision collisionInfo) {
         print("No longer in contact with " + collisionInfo.transform.name + ", " + collisionInfo.transform.tag);
         if (skillStatus.reflect_plus && collisionInfo.transform.tag != "Ground")
         {
             float reflectPlusRate = skillStatus.getReflectPlusRate();
             rigidbody.velocity = new Vector3(rigidbody.velocity.x * reflectPlusRate, rigidbody.velocity.y, rigidbody.velocity.z * reflectPlusRate);
+        } else if (collisionInfo.transform.tag == "Ground")
+        {
+            Vector3? ground_collid_point = null;
         }
     }
 }

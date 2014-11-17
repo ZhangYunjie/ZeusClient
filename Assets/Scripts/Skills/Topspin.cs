@@ -18,9 +18,21 @@ public class Topspin : Skill {
         Debug.Log("Top Spin");
         haveLaunched = true;
 
-        Vector2 speedDirection = new Vector2(player.rigidbody.velocity.x, player.rigidbody.velocity.z);
-        Vector3 rotateDirection = new Vector3(speedDirection.y, 0, - speedDirection.x);
+        player.rigidbody.AddTorque(calcRotationDirection() * rotatePower * topDirection);
+    }
 
-        player.rigidbody.AddTorque(rotateDirection.normalized * rotatePower * topDirection);
-}
+    Vector3 calcRotationDirection()
+    {
+        Vector3 rotateDirection;
+        if (playerController.ground_collid_point == null)
+        {
+            Vector2 speedDirection = new Vector2(player.rigidbody.velocity.x, player.rigidbody.velocity.z);
+            rotateDirection = new Vector3(speedDirection.y, 0, - speedDirection.x);
+        } else
+        {
+            Vector3 ground_plane = playerController.ground_collid_point - player.transform.position;
+            rotateDirection =  Vector3.Cross(player.rigidbody.velocity, ground_plane);
+        }
+        return rotateDirection.normalized;
+    }
 }
